@@ -1,11 +1,11 @@
 <?php
-// Definisikan struktur menu bersarang (nested menu) sesuai kebutuhan proyek Anda
+// Struktur menu bersarang (nested menu) yang sudah disinkronkan rutenya
 $sidebarMenu = [
     [
         'group' => 'Main Menu',
         'items' => [
             [
-                'name' => 'Dashboard Overview',
+                'name' => 'Dashboard ',
                 'route' => 'admin.dashboard.index',
                 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>',
                 'active_on' => ['admin.dashboard.index'],
@@ -19,19 +19,11 @@ $sidebarMenu = [
             [
                 'name' => 'Postingan',
                 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1M19 20a2 2 0 002-2V8a2 2 0 00-2-2h-5M19 20H9m5-14H5m4 4H5m7 4H5"></path>',
-                'active_on' => ['admin.posts.index', 'admin.posts.create', 'admin.posts.edit'], // Sinkron rute name lama & baru Anda
+                'active_on' => ['admin.posts.index', 'admin.posts.create', 'admin.posts.edit'],
                 'has_children' => true,
                 'id' => 'menu-postingan',
                 'children' => [['name' => 'List Postingan', 'route' => 'admin.posts.index', 'active_on' => ['admin.posts.index']], ['name' => 'Buat Postingan', 'route' => 'admin.posts.create', 'active_on' => ['admin.posts.create']]],
             ],
-            // [
-            //     'name' => 'Donasi',
-            //     'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
-            //     'active_on' => ['donasi.campaign', 'donasi.laporan'],
-            //     'has_children' => true,
-            //     'id' => 'menu-donasi',
-            //     'children' => [['name' => 'Buat Campaign', 'route' => 'donasi.campaign', 'active_on' => ['donasi.campaign']], ['name' => 'Laporan Keuangan', 'route' => 'donasi.laporan', 'active_on' => ['donasi.laporan']]],
-            // ],
         ],
     ],
 ];
@@ -41,8 +33,9 @@ $sidebarMenu = [
     class="hidden md:flex flex-col flex-shrink-0 text-slate-300 border-r border-slate-800 transition-all duration-300 ease-in-out bg-[var(--bg-sidebar)]"
     :class="sidebarOpen ? 'w-64' : 'w-20'">
 
-    <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-[var(--bg-sidebar-inner)]/40">
-        <div class="flex items-center gap-3 overflow-hidden whitespace-nowrap">
+    <div
+        class="h-16 flex items-center px-6 border-b border-slate-800 bg-[var(--bg-sidebar-inner)]/40 overflow-hidden whitespace-nowrap">
+        <div class="flex items-center gap-3 min-w-0">
             <div
                 class="p-2 rounded-lg border border-teal-900/50 flex-shrink-0 bg-[var(--accent-muted)]/80 text-[var(--accent-text)]">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,9 +44,9 @@ $sidebarMenu = [
                     </path>
                 </svg>
             </div>
-            <span class="font-bold text-lg text-slate-100 tracking-wider transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0'">
-                COOL<span class="text-[var(--accent-text)]">CORE</span>
+            <span class="font-bold text-lg text-slate-100 tracking-wider transition-all duration-200"
+                :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 invisible'">
+                DH<span class="text-[var(--accent-text)]">BPN</span>
             </span>
         </div>
     </div>
@@ -61,7 +54,7 @@ $sidebarMenu = [
     <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-1.5 custom-scrollbar" x-data="{ openMenus: [] }">
 
         @foreach ($sidebarMenu as $menuGroup)
-            <div class="px-3 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest block whitespace-nowrap overflow-hidden pt-4 first:pt-0"
+            <div class="px-3 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest block whitespace-nowrap overflow-hidden pt-4 first:pt-0 transition-all duration-200"
                 x-show="sidebarOpen" x-transition:enter="transition duration-200" x-transition:enter-start="opacity-0">
                 {{ $menuGroup['group'] }}
             </div>
@@ -70,7 +63,7 @@ $sidebarMenu = [
                 <?php $isGroupActive = request()->routeIs($item['active_on']); ?>
 
                 @if ($item['has_children'])
-                    <div class="space-y-1" x-init="if ({{ $isGroupActive ? 'true' : 'false' }}) { openMenus.push('{{ $item['id'] }}') }">
+                    <div class="space-y-1 block clear-both" x-init="if ({{ $isGroupActive ? 'true' : 'false' }}) { openMenus.push('{{ $item['id'] }}') }">
 
                         <button
                             @click="openMenus.includes('{{ $item['id'] }}') ? openMenus = openMenus.filter(m => m !== '{{ $item['id'] }}') : openMenus.push('{{ $item['id'] }}')"
@@ -127,7 +120,7 @@ $sidebarMenu = [
             @endforeach
         @endforeach
 
-        <div class="px-3 pt-4 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest block whitespace-nowrap overflow-hidden"
+        <div class="px-3 pt-4 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest block whitespace-nowrap overflow-hidden transition-all duration-200"
             x-show="sidebarOpen" x-transition:enter="transition duration-200" x-transition:enter-start="opacity-0">
             Sistem
         </div>
@@ -145,5 +138,4 @@ $sidebarMenu = [
         </button>
 
     </nav>
-
 </aside>
