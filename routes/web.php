@@ -1,0 +1,43 @@
+<?php
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Volt::route('/posts/{slug}', 'home.post-detail')->name('home.post-detail');
+
+Volt::route('/posts', 'home.posts');
+
+Route::middleware('guest')->group(function () {
+    // Rute Halaman Login Utama
+    Volt::route('/login', 'auth.login')->name('login');
+});
+
+
+// 2. RUTE KHUSUS ADMIN/GURU (AUTH PROTECTED) - Wajib login dulu
+Route::middleware('auth')->group(function () {
+
+    // Kelompok Rute Postingan Sekolah
+
+    Volt::route('/admin/dashboard', 'admin.dashboard.index')->name('admin.dashboard.index');
+
+
+    Volt::route('/admin/posts', 'admin.posts.index')->name('admin.posts.index');
+    Volt::route('/admin/posts/create', 'admin.posts.form')->name('admin.posts.create');
+    Volt::route('/admin/posts/{slug}/edit', 'admin.posts.form')->name('admin.posts.edit');
+
+    Volt::route('/admin/donations/campaign', 'admin.donations.campaign')->name('admin.donations.campaign');
+
+    // Handler Aksi Prosedural Logout
+    Route::post('/logout', function () {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('login');
+    })->name('logout');
+});

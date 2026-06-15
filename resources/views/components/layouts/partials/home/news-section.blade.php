@@ -1,0 +1,1 @@
+<livewire:home.recent-posts />
