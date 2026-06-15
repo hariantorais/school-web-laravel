@@ -3,81 +3,91 @@
 namespace App\Livewire\Forms;
 
 use Livewire\Form;
-use App\Models\Post;
 use App\Services\PostService;
-use App\Traits\HasImageProcess;
-use Livewire\Attributes\Validate;
 
 class PostForm extends Form
 {
-    use HasImageProcess;
-
-    // Model referensi untuk mode Edit
-    public ?Post $post = null;
-
-    // Properti Form Bindings
+    public ?int $id = null;
     public string $title = '';
     public string $category_id = '';
     public string $content = '';
     public string $status = 'draft';
-    public $featured_image;
+    public $image = null;
 
-    /**
-     * Aturan Validasi Dinamis
-     */
+    // 🔥 NEW PROPERTY: Daftarkan properti penampung tanggal
+    public ?string $published_at = null;
+
     public function rules(): array
     {
         return [
-            'title' => 'required|min:5|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'content' => 'required|min:20',
-            'status' => 'required|in:draft,published',
-            'featured_image' => 'nullable|' . ($this->post ? 'image|max:2048' : 'required|image|max:2048'),
+            'title'       => ['required', 'string', 'min:5', 'max:255'],
+            'category_id' => ['required', 'exists:categories,id'],
+            'content'     => ['required', 'string', 'min:20'],
+            'status'      => ['required', 'in:draft,published'],
+            'image'       => ['nullable', 'image', 'max:2048', 'mimes:jpeg,jpg,png,webp'],
         ];
     }
 
     /**
-     * Set Data Postingan untuk Mode Edit (Hydrate)
+     * Map data dari model ke form saat mode EDIT dipicu
      */
-    public function setPost(Post $post): void
+    public function setPost(\App\Models\Post $post): void
     {
-        $this->post = $post;
+        $this->id = $post->id;
         $this->title = $post->title;
         $this->category_id = $post->category_id;
         $this->content = $post->content;
         $this->status = $post->status;
+
+        // 🔥 AMBIL DATA DARI DB: Pertahankan data penanggalan yang sudah ada sebelumnya
+        $this->published_at = $post->published_at ? $post->published_at->toDateTimeString() : null;
+        $this->image = null;
     }
 
     /**
-     * Proses Penyimpanan Utama (Menangani Create & Update secara cerdas)
+     * Memproses Eksekusi Simpan Akhir melalui Service Layer Terpusat
      */
-    public function store(PostService $postService): void
+    public function store(): array
     {
-        $this->validate();
+        $service = app(PostService::class);
 
-        // Kompresi gambar via Trait jika ada file baru diunggah
-        $imagePath = null;
-        if ($this->featured_image) {
-            $imagePath = $this->compressAndStore($this->featured_image, 'blog-images');
-        }
-
-        $formData = $this->all();
-
-        if ($this->post) {
-            // Jalankan fungsi update jika objek model post terdeteksi
-            $postService->update($this->post, $formData, $imagePath);
+        // 🔥 LOGIKA ALA WORDPRESS: Kelola nilai tanggal terbit sebelum masuk ke payload
+        if ($this->status === 'published') {
+            // Jika status publish, gunakan tanggal lama (jika ada) atau set ke waktu sekarang jika baru terbit
+            $publishedAtValue = $this->published_at ?? now()->toDateTimeString();
         } else {
-            // Jalankan fungsi create jika postingan baru
-            $postService->create($formData, $imagePath);
+            // Jika disimpan sebagai draft, tanggal terbit harus dihilangkan (null)
+            $publishedAtValue = null;
         }
+
+        // Siapkan payload bersih
+        $payload = [
+            'title'        => strip_tags(trim($this->title)),
+            'category_id'  => (int) $this->category_id,
+            'content'      => $this->content,
+            'status'       => $this->status,
+            'published_at' => $publishedAtValue, // 🔥 MASUKKAN KE PAYLOAD UNTUK SERVICE
+        ];
+
+        // Eksekusi percabangan berdasarkan keberadaan ID
+        if ($this->id) {
+            $service->update($this->id, $payload, $this->image);
+            $message = 'Artikel postingan berhasil diperbarui!';
+        } else {
+            $service->create($payload, $this->image);
+            $message = 'Artikel postingan baru berhasil diterbitkan!';
+        }
+
+        $this->clear();
+
+        return [
+            'type'    => 'success',
+            'message' => $message
+        ];
     }
 
-    /**
-     * Bersihkan Form State setelah eksekusi
-     */
     public function clear(): void
     {
-        $this->reset(['title', 'category_id', 'content', 'featured_image', 'status']);
-        $this->post = null;
+        $this->reset();
     }
 }

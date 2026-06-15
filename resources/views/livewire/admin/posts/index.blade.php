@@ -2,114 +2,87 @@
 
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
-use App\Models\Post;
-use App\Models\Category;
-use Illuminate\Support\Facades\Storage;
+use App\Services\PostService;
+use Livewire\Attributes\{Computed, On, Title};
 
 new class extends Component {
     use WithPagination;
 
-    // State untuk Pencarian dan Filter
+    // State Utama Filter UI
+    #[Title('Manajemen Postingan')]
     public string $search = '';
     public string $filterCategory = '';
     public string $filterStatus = '';
 
-    // Reset halaman pagination jika user mengetik di kolom pencarian
-    public function updatingSearch()
+    #[On('refresh-table')]
+    public function refreshTable(): void {}
+
+    public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+    public function updatingFilterCategory(): void
+    {
+        $this->resetPage();
+    }
+    public function updatingFilterStatus(): void
     {
         $this->resetPage();
     }
 
     /**
-     * Aksi Menghapus Postingan Sekolah Resmi beserta Gambar Sampulnya
+     * Mengambil Data Postingan Terfilter via Service Layer
      */
-    public function deletePost(int $id)
+    #[Computed]
+    public function posts()
     {
-        $post = Post::findOrFail($id);
+        $payloadFilters = [
+            'search' => trim($this->search),
+            'category' => $this->filterCategory,
+            'status' => $this->filterStatus,
+        ];
 
-        // Hapus file fisik gambar dari storage jika ada
-        if ($post->featured_image) {
-            Storage::disk('public')->delete($post->featured_image);
-        }
-
-        $post->delete();
-
-        session()->flash('message', 'Postingan berhasil dihapus permanen dari sistem.');
+        return app(PostService::class)->getAllPaginated($payloadFilters, 10);
     }
 
     /**
-     * Mengambil dan memfilter data postingan secara reaktif
+     * Memproses Delegasi Perintah Hapus ke Service Layer Resmi
      */
-    public function with(): array
+    public function delete(int $id, PostService $service)
     {
-        $posts = Post::with(['category', 'user'])
-            ->when($this->search, function ($query) {
-                $query->where('title', 'like', '%' . $this->search . '%');
-            })
-            ->when($this->filterCategory, function ($query) {
-                $query->where('category_id', $this->filterCategory);
-            })
-            ->when($this->filterStatus, function ($query) {
-                $query->where('status', $this->filterStatus);
-            })
-            ->latest()
-            ->paginate(10);
-
-        return [
-            'posts' => $posts,
-            'categories' => Category::all(),
-        ];
+        try {
+            $service->delete($id);
+            $this->dispatch('toast', type: 'success', message: 'Artikel postingan resmi berhasil dihapus dari server!');
+        } catch (\Exception $e) {
+            $this->dispatch('toast', type: 'error', message: 'Gagal mengeksekusi perintah: ' . $e->getMessage());
+        }
     }
 }; ?>
 
-<div class="space-y-6">
+<div class="space-y-5 animate-fade-in">
 
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Manajemen Postingan</h1>
-            <p class="text-xs text-slate-400 mt-1">Kelola semua berita, pengumuman resmi, dan agenda kegiatan sekolah di
-                sini.</p>
-        </div>
-        <div>
-            <a href="{{ route('admin.posts.create') }}" wire:navigate
-                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm px-4 py-3 sm:py-2.5 rounded-lg transition-all shadow-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Tulis Artikel Baru
-            </a>
-        </div>
-    </div>
+    <x-slot name="subhead">
+        Kelola semua berita, pengumuman resmi, dan agenda
+        kegiatan sekolah
+        di sini.
+    </x-slot>
 
-    @if (session()->has('message'))
-        <div
-            class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium rounded-lg flex items-center gap-2.5 shadow-sm">
-            <svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span>{{ session('message') }}</span>
-        </div>
-    @endif
+    <x-slot name="headerAction">
+        <x-ui.button href="{{ route('admin.posts.create') }}" class="w-full sm:w-auto inline-flex items-center gap-2">
+            <x-heroicon-m-pencil class="w-4 h-4" />
+            Tulis Artikel Baru
+        </x-ui.button>
+    </x-slot>
 
-    <div class="bg-white p-4 border border-slate-200 rounded-xl shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </span>
-            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari judul postingan..."
-                class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-700 focus:outline-none transition-all">
-        </div>
+    <div
+        class="bg-white p-4 border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-100/40 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <x-form.search placeholder="Cari judul postingan..." name="search" />
 
         <div>
             <select wire:model.live="filterCategory"
-                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-700 focus:outline-none transition-all cursor-pointer">
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:ring-4 focus:ring-[var(--accent-focus)] focus:border-[var(--accent-primary)] focus:outline-hidden transition-all cursor-pointer">
                 <option value="">Semua Kategori</option>
-                @foreach ($categories as $category)
+                @foreach (\App\Models\Category::all() as $category)
                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                 @endforeach
             </select>
@@ -117,7 +90,7 @@ new class extends Component {
 
         <div>
             <select wire:model.live="filterStatus"
-                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-700 focus:outline-none transition-all cursor-pointer">
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:ring-4 focus:ring-[var(--accent-focus)] focus:border-[var(--accent-primary)] focus:outline-hidden transition-all cursor-pointer">
                 <option value="">Semua Status</option>
                 <option value="draft">Draft</option>
                 <option value="published">Diterbitkan</option>
@@ -125,156 +98,101 @@ new class extends Component {
         </div>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    {{-- KONTANER TABEL TUNGGAL RESPONSIF --}}
+    {{-- GRID KONTENER UTAMA --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+        @forelse($this->posts as $post)
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-slate-300/60 transition-all duration-200 flex flex-col overflow-hidden group"
+                wire:key="post-card-{{ $post->id }}">
 
-        <div class="hidden md:block overflow-x-auto">
-            <table class="w-full text-left border-collapse text-sm text-slate-600">
-                <thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
-                    <tr>
-                        <th class="p-4 w-16 text-center">Info</th>
-                        <th class="p-4">Judul Artikel</th>
-                        <th class="p-4">Kategori</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4">Tanggal Rilis</th>
-                        <th class="p-4 text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse($posts as $post)
-                        <tr class="hover:bg-slate-50/50 transition-colors">
-                            <td class="p-4 text-center">
-                                @if ($post->featured_image)
-                                    <img src="{{ asset('storage/' . $post->featured_image) }}"
-                                        class="w-10 h-10 object-cover rounded-md border border-slate-100 mx-auto shadow-inner">
-                                @else
-                                    <div
-                                        class="w-10 h-10 bg-slate-100 text-slate-400 rounded-md flex items-center justify-center mx-auto text-xs">
-                                        No img</div>
-                                @endif
-                            </td>
-                            <td class="p-4 font-medium text-slate-900 max-w-xs">
-                                <p class="truncate" title="{{ $post->title }}">{{ $post->title }}</p>
-                                <p class="text-xs text-slate-400 font-normal mt-0.5">Oleh: {{ $post->user->name }}</p>
-                            </td>
-                            <td class="p-4 text-slate-500">{{ $post->category->name }}</td>
-                            <td class="p-4">
-                                @if ($post->status === 'published')
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Aktif</span>
-                                @else
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">Draft</span>
-                                @endif
-                            </td>
-                            <td class="p-4 text-slate-400 text-xs">
-                                {{ $post->published_at ? $post->published_at->format('d M Y, H:i') : 'Belum rilis' }}
-                            </td>
-                            <td class="p-4 text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <a href="{{ route('admin.posts.edit', $post->slug) }}" wire:navigate
-                                        class="p-1.5 text-slate-500 hover:text-teal-700 hover:bg-teal-50 rounded-md transition-colors"
-                                        title="Ubah data">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                            </path>
-                                        </svg>
-                                    </a>
-                                    <button
-                                        @click="confirm('Apakah Anda yakin ingin menghapus pengumuman ini secara permanen?') ? $wire.deletePost({{ $post->id }}) : null"
-                                        class="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
-                                        title="Hapus data">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-16v1a3 3 0 003 3h10M9 3h6m2 5H5">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="p-12 text-center text-slate-400">Tidak ada postingan sekolah yang
-                                sesuai dengan filter pencarian.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                {{-- 1. AREA GAMBAR SAMPUL & BADGE --}}
+                <div class="w-full aspect-video bg-slate-100 relative overflow-hidden border-b border-slate-100">
+                    <img src="{{ $post->image_url }}" alt="{{ $post->title }}"
+                        class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300">
 
-        <div class="block md:hidden divide-y divide-slate-100">
-            @forelse($posts as $post)
-                <div class="p-4 flex flex-col gap-3.5 bg-white">
-                    <div class="flex items-start gap-3">
-                        @if ($post->featured_image)
-                            <img src="{{ asset('storage/' . $post->featured_image) }}"
-                                class="w-12 h-12 object-cover rounded-lg border border-slate-100 flex-shrink-0 shadow-inner">
-                        @else
-                            <div
-                                class="w-12 h-12 bg-slate-50 text-slate-400 rounded-lg flex items-center justify-center text-[10px] flex-shrink-0 border border-slate-100">
-                                No Img</div>
-                        @endif
-
-                        <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-semibold text-slate-900 break-words line-clamp-2 leading-snug">
-                                {{ $post->title }}</h4>
-                            <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                                <span
-                                    class="text-[10px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded">{{ $post->category->name }}</span>
-                                @if ($post->status === 'published')
-                                    <span
-                                        class="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-100">Aktif</span>
-                                @else
-                                    <span
-                                        class="text-[10px] font-semibold bg-amber-50 text-amber-700 px-2 py-0.5 rounded border border-amber-100">Draft</span>
-                                @endif
-                            </div>
-                        </div>
+                    {{-- Kategori Melayang --}}
+                    <div class="absolute top-3 left-3">
+                        <span
+                            class="bg-slate-900/70 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border border-white/10 shadow-xs">
+                            {{ $post->category->name }}
+                        </span>
                     </div>
 
-                    <div
-                        class="flex items-center justify-between pt-3 border-t border-slate-100/70 text-xs text-slate-400">
-                        <div>
-                            <p>Oleh: <span class="text-slate-600 font-medium">{{ $post->user->name }}</span></p>
-                            <p class="text-[10px] mt-0.5">
-                                {{ $post->published_at ? $post->published_at->format('d/m/Y H:i') : 'Belum rilis' }}
-                            </p>
+                    {{-- Status Badge Melayang --}}
+                    <div class="absolute top-3 right-3">
+                        @if ($post->status === 'published')
+                            <span
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500 text-white border border-emerald-400 shadow-sm">
+                                <span class="w-1 h-1 bg-white rounded-full animate-pulse"></span>
+                                Diterbitkan
+                            </span>
+                        @else
+                            <span
+                                class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-600 text-white border border-slate-500 shadow-sm">
+                                Draft
+                            </span>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- 2. BADAN INFORMASI KARTU (CARD BODY) --}}
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+
+                    {{-- Bagian Teks: Judul + Potongan Isi Konten --}}
+                    <div class="space-y-2">
+                        {{-- Judul Artikel --}}
+                        <h3 class="font-extrabold text-sm text-slate-800 line-clamp-2 leading-snug tracking-tight group-hover:text-[var(--accent-primary)] transition-colors"
+                            title="{{ $post->title }}">
+                            {{ $post->title }}
+                        </h3>
+
+                        <p class="text-xs text-slate-500 line-clamp-2 font-medium leading-relaxed break-words">
+                            {{ clean_trix($post->content, 80) }}
+                        </p>
+                    </div>
+
+                    {{-- 3. FOOTER KARTU: METADATA & AKSI --}}
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-4">
+                        {{-- Informasi Penulis & Waktu --}}
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            {{-- Avatar Inisial --}}
+                            <div
+                                class="w-7 h-7 rounded-full bg-[var(--accent-muted)]/60 border border-teal-900/10 flex items-center justify-center shrink-0">
+                                <span class="text-[10px] font-bold text-[var(--accent-text)] uppercase">
+                                    {{ substr($post->user->name, 0, 2) }}
+                                </span>
+                            </div>
+
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-xs font-bold text-slate-700 truncate leading-none mb-1">
+                                    {{ $post->user->name }}
+                                </span>
+                                <span class="text-[10px] text-slate-400 font-medium leading-none">
+                                    {{ $post->published_at ? $post->published_at->diffForHumans() : 'Belum dirilis' }}
+                                </span>
+                            </div>
                         </div>
 
-                        <div class="flex items-center gap-1">
-                            <a href="{{ route('admin.posts.edit', $post->slug) }}" wire:navigate
-                                class="inline-flex items-center justify-center gap-1 bg-slate-50 border border-slate-200 text-slate-700 font-medium px-3 py-2 rounded-lg text-xs active:bg-slate-100 transition-colors">
-                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                    </path>
-                                </svg>
-                                Edit
-                            </a>
-                            <button
-                                @click="confirm('Hapus permanen artikel ini?') ? $wire.deletePost({{ $post->id }}) : null"
-                                class="inline-flex items-center justify-center gap-1 bg-rose-50 border border-rose-200 text-rose-700 font-medium px-3 py-2 rounded-lg text-xs active:bg-rose-100 transition-colors">
-                                <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-16v1a3 3 0 003 3h10M9 3h6m2 5H5">
-                                    </path>
-                                </svg>
-                                Hapus
-                            </button>
+                        {{-- Komponen Aksi --}}
+                        <div class="shrink-0">
+                            <x-table.actions :id="$post->id" :modalName="null"
+                                href="{{ route('admin.posts.edit', $post->slug) }}" />
                         </div>
                     </div>
                 </div>
-            @empty
-                <div class="p-12 text-center text-xs text-slate-400">Tidak ada postingan sekolah.</div>
-            @endforelse
-        </div>
 
-        <div class="p-4 bg-slate-50 border-t border-slate-100">
-            {{ $posts->links() }}
-        </div>
-
+            </div>
+        @empty
+            <div class="col-span-1 sm:col-span-2 xl:col-span-3">
+                <x-table.empty colspan="1" :search="$search"
+                    blankMessage="Belum ada artikel atau pengumuman sekolah terdaftar." />
+            </div>
+        @endforelse
     </div>
+
+    {{-- BARIS NAVIGASI PAGINASI --}}
+    <x-table.pagination :paginator="$this->posts" />
+
+    {{-- MODAL MODAL DIALOG CONFIRM REUSABLE --}}
+    <x-ui.confirm confirmLabel="Ya, Hapus Artikel" />
 </div>

@@ -43,7 +43,7 @@ class Post extends Model
 
                 // 2. Jika tidak ada gambar, kembalikan gambar placeholder aset sekolah resmi
                 //    Pastikan Anda menaruh file 'default-post.webp' di folder public/assets/images/
-                return asset('assets/images/default-post.webp');
+                return asset('assets/images/default.webp');
             }
         );
     }

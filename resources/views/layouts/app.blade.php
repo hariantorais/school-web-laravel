@@ -11,33 +11,6 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Anda bisa mengubah kode HEX di bawah ini untuk mengganti tema seluruh aplikasi instant */
-        :root {
-            --bg-main: #f8fafc;
-            /* Slate 50 - Latar belakang utama sangat adem */
-            --bg-sidebar: #0f172a;
-            /* Slate 900 - Sidebar gelap berbasis biru redup */
-            --bg-sidebar-inner: #020617;
-            /* Slate 950 - Variasi gelap pekat */
-
-            /* Warna Aksen Utama (Teal/Hijau Kebiruan yang Rileks di Mata) */
-            --accent-primary: #0f766e;
-            /* Teal 700 - Untuk Tombol Utama / CTA */
-            --accent-hover: #115e59;
-            /* Teal 800 - Efek Hover Tombol */
-            --accent-muted: #134e4a;
-            /* Teal 950 - Background Aktif Sidebar (Sangat Gelap) */
-            --accent-text: #2dd4bf;
-            /* Teal 400 - Teks Aktif / Icon Aktif */
-            --accent-focus: rgba(15, 118, 110, 0.15);
-            /* Ring focus shadow */
-        }
-    </style>
 </head>
 
 <body class="bg-[var(--bg-main)] text-slate-800 antialiased" x-data="{ sidebarOpen: true, profileMenuOpen: false, mobileSidebarOpen: false }">
@@ -46,41 +19,7 @@
 
         @include('layouts.partials.sidebar')
 
-        <div x-show="mobileSidebarOpen" @click="mobileSidebarOpen = false"
-            class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm md:hidden"></div>
-        <aside x-show="mobileSidebarOpen"
-            class="fixed inset-y-0 left-0 z-50 w-64 text-slate-300 flex flex-col md:hidden bg-[var(--bg-sidebar)]">
-            <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 rounded-lg bg-[var(--accent-muted)] text-[var(--accent-text)]">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4">
-                            </path>
-                        </svg>
-                    </div>
-                    <span class="font-bold text-lg text-slate-100">COOL<span
-                            class="text-[var(--accent-text)]">CORE</span></span>
-                </div>
-                <button @click="mobileSidebarOpen = false" class="text-slate-400 hover:text-slate-100">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                        </path>
-                    </svg>
-                </button>
-            </div>
-            <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-1.5">
-                <a href="#"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium bg-[var(--accent-muted)] text-[var(--accent-text)] border border-teal-900/30">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z">
-                        </path>
-                    </svg>
-                    <span>Dashboard</span>
-                </a>
-            </nav>
-        </aside>
+
 
         <div class="flex-1 flex flex-col h-screen overflow-hidden">
 
@@ -153,7 +92,17 @@
             </header>
 
             <main class="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8">
-
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{{ $title ?? '' }}</h1>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            {{ $subhead ?? '' }}
+                        </p>
+                    </div>
+                    <div>
+                        {{ $headerAction ?? '' }}
+                    </div>
+                </div>
 
                 {{ $slot }}
 

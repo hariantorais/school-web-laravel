@@ -37,4 +37,13 @@ trait HasImageProcess
 
       return $targetPath;
    }
+
+   public function deleteImage(?string $path): bool
+   {
+      if ($path && Storage::disk('public')->exists($path)) {
+         return Storage::disk('public')->delete($path);
+      }
+
+      return false;
+   }
 }

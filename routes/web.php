@@ -30,7 +30,9 @@ Route::middleware('auth')->group(function () {
     Volt::route('/admin/posts/create', 'admin.posts.form')->name('admin.posts.create');
     Volt::route('/admin/posts/{slug}/edit', 'admin.posts.form')->name('admin.posts.edit');
 
-    Volt::route('/admin/donations/campaign', 'admin.donations.campaign')->name('admin.donations.campaign');
+    Volt::route('/admin/donations', 'admin.donations.index')->name('admin.donations.index');
+
+    Volt::route('/admin/donations/transactions', 'admin.donations.transactions')->name('admin.donations.transactions');
 
     // Handler Aksi Prosedural Logout
     Route::post('/logout', function () {

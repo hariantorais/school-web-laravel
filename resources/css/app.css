@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'home.css';
 
 @import 'trix/dist/trix.css';
 
@@ -17,3 +16,30 @@ trix-editor {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+
+  body {
+      font-family: 'Inter', sans-serif;
+  }
+
+  /* Anda bisa mengubah kode HEX di bawah ini untuk mengganti tema seluruh aplikasi instant */
+  :root {
+      --bg-main: #f8fafc;
+      /* Slate 50 - Latar belakang utama sangat adem */
+      --bg-sidebar: #0f172a;
+      /* Slate 900 - Sidebar gelap berbasis biru redup */
+      --bg-sidebar-inner: #020617;
+      /* Slate 950 - Variasi gelap pekat */
+
+      /* Warna Aksen Utama (Teal/Hijau Kebiruan yang Rileks di Mata) */
+      --accent-primary: #0f766e;
+      /* Teal 700 - Untuk Tombol Utama / CTA */
+      --accent-hover: #115e59;
+      /* Teal 800 - Efek Hover Tombol */
+      --accent-muted: #134e4a;
+      /* Teal 950 - Background Aktif Sidebar (Sangat Gelap) */
+      --accent-text: #2dd4bf;
+      /* Teal 400 - Teks Aktif / Icon Aktif */
+      --accent-focus: rgba(15, 118, 110, 0.15);
+      /* Ring focus shadow */
+  }

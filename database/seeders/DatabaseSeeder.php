@@ -42,5 +42,9 @@ class DatabaseSeeder extends Seeder
                 ['name' => $categoryName]
             );
         }
+
+        $this->call([
+            DonationSeeder::class,
+        ]);
     }
 }
