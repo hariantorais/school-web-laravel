@@ -100,11 +100,10 @@
                         class="bg-[{{ $accentColor }}]/10 rounded-xl p-3 sm:p-4 text-center hover:bg-[{{ $accentColor }}]/20 transition-all duration-300 border border-[{{ $accentColor }}]/20 group-hover:border-[{{ $accentColor }}]/50">
                         <span
                             class="text-2xl sm:text-3xl font-heading font-bold text-[{{ $accentColor }}]">{{ $item['name'] }}</span>
-                        <p
-                            class="text-[10px] sm:text-xs text-{{ $textColor == 'white' ? 'white/90' : 'gray-700' }} mt-1">
+                        <p class="text-[10px] sm:text-xs text-white mt-1">
                             {{ $item['label'] }}</p>
                         @if (isset($item['age']))
-                            <p class="text-[8px] sm:text-[10px] text-[{{ $accentColor }}]/80 mt-1 sm:mt-2">
+                            <p class="text-[8px] sm:text-[10px] text-[{{ $accentColor }}] mt-1 sm:mt-2">
                                 {{ $item['age'] }}</p>
                         @endif
                     </div>
