@@ -42,8 +42,8 @@
                              <iframe class="absolute inset-0 w-full h-full"
                                  src="https://www.youtube.com/embed/ADoo8RD8sDI?rel=0&modestbranding=1"
                                  title="Profil Pondok Pesantren Daarul Huffadz Balikpapan" frameborder="0"
-                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                 allowfullscreen>
+                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                 referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
                              </iframe>
                          </div>
 
