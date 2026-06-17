@@ -8,6 +8,15 @@
     "src": "resources/css/app.css",
     "isEntry": true
   },
+  "resources/css/home.css": {
+    "file": "assets/home-DLBpvmp6.css",
+    "name": "home",
+    "names": [
+      "home.css"
+    ],
+    "src": "resources/css/home.css",
+    "isEntry": true
+  },
   "resources/js/app.js": {
     "file": "assets/app-DAI3-lsb.js",
     "name": "app",
