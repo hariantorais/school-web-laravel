@@ -33,7 +33,8 @@ if (!function_exists('get_settings')) {
             'school_name' => $institution->name ?? 'Pondok Pesantren Daarul Huffadz Balik Papan',
             'school_address' => $institution->address ?? 'Jl. Flamboyan RT 64 Perum Batu Ampar Lestari, Balikpapan.',
 
-            'phone' => $institution->whatsapp ?? '',
+            'whatsapp' => $institution->whatsapp ?? '',
+            'whatsapp_2' => $institution->whatsapp_2 ?? '',
             'school_email' => $institution->email ?? 'info@daarulhuffadzbalikpapan.com',
             'school_tagline' => $institution->tagline ?? "Mewujudkan generasi penghafal Al-Qur'an berakhlak mulia...",
             'school_logo' => $institution->logo_url ?? asset('images/logo.png'),
