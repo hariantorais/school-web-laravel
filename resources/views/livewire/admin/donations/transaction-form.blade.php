@@ -112,8 +112,6 @@ new class extends Component {
                 <x-form.autocomplete name="form.donation_id" placeholder="Ketik nama program donasi untuk mencari..."
                     :list="$this->donationListJson" />
             </div>
-
-
         </div>
 
         {{-- MONITORING PANEL KETERAPAIAN KAS --}}
@@ -170,7 +168,6 @@ new class extends Component {
                 placeholder="Contoh: Hamba Allah / Nama Wali" />
         </div>
         <div>
-            {{-- 🔥 FIX 1: Tambahkan komponen input nomor telepon/handphone donatur --}}
             <x-form.input label="Nomor WhatsApp / HP" name="form.donor_phone" placeholder="Contoh: 0812xxxxxxxx" />
         </div>
     </div>
@@ -178,12 +175,24 @@ new class extends Component {
     {{-- GRID EMAIL & METODE --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <x-form.input type="email" label="Email (Opsional)" name="form.donor_email" placeholder="donatur@email.com" />
+
+        {{-- 🔥 GANTI: Menggunakan component currency untuk jumlah donasi --}}
+        <x-form.currency label="Jumlah Donasi *" name="form.amount" placeholder="Minimal Rp 10.000" />
+    </div>
+
+    {{-- 3. METODE PEMBAYARAN (Pindah ke baris baru) --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <x-form.select label="Metode Penerimaan *" name="form.payment_method">
-            {{-- SINKRONISASI: Disesuaikan dengan string value enum database Anda (manual / bank_transfer) --}}
             <option value="cash">Tunai</option>
             <option value="transfer_bank">Transfer Bank</option>
-
         </x-form.select>
+
+        {{-- Optional: Tambahkan info minimal donasi --}}
+        <div class="flex items-end">
+            <p class="text-[10px] text-slate-400">
+                ⚡ Minimal donasi Rp 10.000
+            </p>
+        </div>
     </div>
 
     {{-- 4. CATATAN / DOA --}}

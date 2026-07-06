@@ -106,17 +106,3 @@
         @endif
     @endforeach
 @endforeach
-
-{{-- Kelompok Menu Sistem & Logout --}}
-<div class="px-3 pt-4 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest block whitespace-nowrap overflow-hidden transition-all duration-200"
-    @if (!$isMobile) x-show="sidebarOpen" @endif>
-    Sistem
-</div>
-
-<button onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-950/20 hover:text-rose-300 transition-all border border-transparent group overflow-hidden whitespace-nowrap text-left cursor-pointer"
-    title="Keluar Sistem">
-    <x-heroicon-o-arrow-left-on-rectangle class="w-5 h-5 flex-shrink-0 text-rose-400/60 group-hover:text-rose-400" />
-    <span @if (!$isMobile) x-show="sidebarOpen" @endif
-        class="transition-opacity duration-200 truncate">Keluar Sistem</span>
-</button>

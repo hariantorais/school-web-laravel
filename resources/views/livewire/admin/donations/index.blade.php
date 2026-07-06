@@ -155,99 +155,12 @@ new class extends Component {
         </div>
     </div>
 
-    {{-- ========================================================================= --}}
-    {{-- BLOCK 3: GRID CARD HYBRID UTAMA BERBASIS KATA KUNCI GRID                  --}}
-    {{-- ========================================================================= --}}
+
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         @forelse($this->donations as $donation)
-            @php
-                $percentage =
-                    $donation->target_amount > 0
-                        ? min(($donation->current_amount / $donation->target_amount) * 100, 100)
-                        : 0;
-            @endphp
+            {{-- 📦 PEMANGGILAN KOMPONEN REUSABLE YANG JAUH LEBIH RAPI --}}
+            <x-ui.donation-card :donation="$donation" />
 
-            <div class="bg-white border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-100/30 overflow-hidden flex flex-col group hover:border-[var(--accent-primary)]/40 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-300 relative"
-                wire:key="donation-card-{{ $donation->id }}">
-
-                {{-- AREA BANNER DENGAN OVERLAY STATUS BADGE MELAYANG --}}
-                <div class="w-full h-44 bg-slate-100 relative overflow-hidden border-b border-slate-100 flex-shrink-0">
-                    <img src="{{ $donation->imageUrl }}" alt="{{ $donation->title }}"
-                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-
-                    {{-- Status Badge Melayang --}}
-                    <div class="absolute top-3.5 right-3.5 z-10">
-                        @if ($donation->is_active)
-                            <span
-                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50/90 backdrop-blur-xs text-emerald-700 border border-emerald-200 shadow-xs">
-                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                Aktif
-                            </span>
-                        @else
-                            <span
-                                class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-900/80 backdrop-blur-xs text-slate-100 shadow-xs">
-                                Selesai
-                            </span>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- KONTEN DETAIL CARD --}}
-                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    {{-- Judul Program (Terproteksi Line-Clamp) --}}
-                    <div class="space-y-1">
-                        <h3 class="font-bold text-slate-900 text-sm leading-tight group-hover:text-[var(--accent-primary)] transition-colors line-clamp-2"
-                            title="{{ $donation->title }}">
-                            {{ $donation->title }}
-                        </h3>
-                    </div>
-
-                    {{-- Progres Bar Kas & Akumulasi Dana --}}
-                    <div class="space-y-2 pt-1">
-                        <div
-                            class="w-full bg-slate-100 rounded-full h-2 overflow-hidden shadow-inner border border-slate-200/30">
-                            <div class="bg-[var(--accent-primary)] h-2 rounded-full transition-all duration-500"
-                                style="width: {{ $percentage }}%"></div>
-                        </div>
-
-                        <div class="flex items-center justify-between text-[11px] font-medium text-slate-400">
-                            <div class="flex flex-col">
-                                <span
-                                    class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Terkumpul</span>
-                                <span class="text-xs font-bold text-[var(--accent-primary)]">
-                                    Rp {{ idr($donation->current_amount) }}
-                                </span>
-                            </div>
-                            <div class="flex flex-col items-end">
-                                <span class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Target</span>
-                                <span class="text-xs font-bold text-slate-700 font-mono">
-                                    {{ idr($donation->target_amount) }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- FOOTER CARD: AKSI AKUNTABILITAS DATA --}}
-                <div
-                    class="px-5 py-3.5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-4">
-                    <span
-                        class="text-[11px] font-bold text-slate-500 bg-slate-100 border border-slate-200/60 px-2 py-0.5 rounded-md font-mono">
-                        {{ round($percentage) }}% Ketercapaian
-                    </span>
-
-                    {{-- Komponen Menu Edit / Hapus Reusable --}}
-                    <div class="flex items-center">
-                        <a href="{{ route('admin.donations.transactions', ['filterDonation' => $donation->id]) }}"
-                            wire:navigate title="Lihat Log Transaksi Masuk"
-                            class="p-1.5 text-slate-500 hover:text-[var(--accent-primary)] hover:bg-slate-100 rounded-lg transition-colors border border-transparent hover:border-slate-200">
-                            <x-heroicon-m-document-text class="w-4 h-4" />
-                        </a>
-                        <x-table.actions :id="$donation->id" />
-                    </div>
-                </div>
-
-            </div>
         @empty
             {{-- STATE KOSONG INTERAKTIF --}}
             <div class="col-span-1 md:col-span-2 xl:col-span-3">

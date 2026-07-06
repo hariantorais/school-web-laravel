@@ -2,7 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\DonationTransaction; // Pastikan nama model sesuai
+use App\Models\DonationTransaction;
+use App\Models\Donation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class DonationTransactionFactory extends Factory
@@ -11,20 +12,66 @@ class DonationTransactionFactory extends Factory
 
     public function definition(): array
     {
+        $status = $this->faker->randomElement([
+            'success',
+            'success',
+            'success',
+            'success', // 80% success
+            'pending',
+            'failed'
+        ]);
+
+        $createdAt = $this->faker->dateTimeBetween('-2 months', 'now');
+        $isSuccess = $status === 'success';
+
         return [
-            // donation_id otomatis disuntikkan secara dinamis dari Seeder
+            'donation_id'    => Donation::factory(), // fallback kalo gak di-inject seeder
             'donor_name'     => $this->faker->name(),
             'donor_email'    => $this->faker->unique()->safeEmail(),
-            'donor_phone'    => $this->faker->phoneNumber(), // Tambahkan jika diperlukan
+            'donor_phone'    => '08' . $this->faker->numerify('##########'),
 
-            // 🔥 SOLUSI UTAMA: Generate kode referensi invoice unik (Contoh: INV-20260616-XXXXX)
-            'reference_code' => now()->format('Ymd') . '-' . strtoupper($this->faker->unique()->bothify('??###')),
+            // Reference unik: INV-20260617-8F3K2
+            'reference_code' => 'INV-' . now()->format('Ymd') . '-' . strtoupper($this->faker->unique()->bothify('??##?')),
 
-            'amount'         => $this->faker->randomElement([50000, 100000, 250000, 500000, 1000000]),
-            'status'         => $this->faker->randomElement(['success', 'success', 'success', 'pending', 'failed']),
-            'notes'          => $this->faker->boolean(60) ? $this->faker->sentence() : null,
-            'created_at'     => $this->faker->dateTimeBetween('-1 months', 'now'),
-            'payment_method' => $this->faker->randomElement(['cash', 'bank_transfer']),
+            'amount'         => $this->faker->randomElement([
+                10000,
+                20000,
+                25000,
+                50000,
+                75000,
+                100000,
+                150000,
+                200000,
+                250000,
+                500000,
+                1000000
+            ]),
+            'status'         => $status,
+            'payment_method' => $this->faker->randomElement([
+                'cash',
+                'bank_transfer'
+            ]),
+            'notes'          => $this->faker->boolean(40) ? $this->faker->sentence(6) : null,
+            'created_at'     => $createdAt,
+            'updated_at'     => $createdAt,
+
+
         ];
+    }
+
+    // State buat bikin transaksi success doang
+    public function success(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'status' => 'success',
+        ]);
+    }
+
+    // State buat pending
+    public function pending(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'status' => 'pending',
+        ]);
     }
 }

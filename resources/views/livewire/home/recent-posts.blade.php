@@ -43,56 +43,15 @@ new class extends Component {
             </p>
         </div>
 
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
             @forelse($latestPosts as $post)
-                <div data-aos="fade-up"
-                    class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
-
-                    <div class="h-56 overflow-hidden relative">
-                        <span
-                            class="absolute top-4 left-4 bg-[#A31D1D] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-md z-10">
-                            {{ $post->category->name }}
-                        </span>
-
-                        <img src="{{ $post->image_url }}" alt="{{ $post->title }}"
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            loading="lazy">
-                    </div>
-
-                    <div class="p-6 flex flex-col flex-grow">
-                        <span class="text-xs font-semibold text-slate-400 block mb-2">
-                            {{ $post->published_at ? $post->published_at->isoFormat('D MMMM Y') : $post->created_at->isoFormat('D MMMM Y') }}
-                        </span>
-
-                        <h3
-                            class="font-heading font-bold text-lg text-[#1E293B] mb-3 hover:text-[#A31D1D] transition-colors line-clamp-2 leading-snug cursor-pointer">
-                            <a href="/post/{{ $post->slug }}" wire:navigate>
-                                {{ $post->title }}
-                            </a>
-                        </h3>
-
-                        <p class="text-slate-500 text-sm line-clamp-3 mb-6">
-                            {{ Str::limit(strip_tags($post->content), 120) }}
-                        </p>
-
-                        <a href="/posts/{{ $post->slug }}" wire:navigate
-                            class="mt-auto text-[#1E293B] font-bold text-sm inline-flex items-center hover:text-[#A31D1D] transition-colors group">
-                            Baca Selengkapnya
-                            <svg class="w-4 h-4 ml-1.5 transform group-hover:translate-x-1 transition-transform"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+                <x-home.post-card :post="$post" :key="$post->id" />
             @empty
                 <div class="col-span-1 md:col-span-3 text-center py-12 text-slate-400 text-sm">
                     Belum ada kabar informasi terbaru yang diterbitkan.
                 </div>
             @endforelse
-
         </div>
 
         <div class="text-center mt-12" data-aos="fade-up">

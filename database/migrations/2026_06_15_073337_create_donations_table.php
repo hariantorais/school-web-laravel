@@ -18,10 +18,18 @@ return new class extends Migration
             $table->text('description');
             $table->string('image_path')->nullable();
 
+            $table->foreignId('donation_category_id')->constrained();
+
+            // TAMBAH INI
+            $table->enum('type', ['one_time', 'recurring_open', 'recurring_subscription'])
+                ->default('one_time')
+            ;
+
             $table->decimal('target_amount', 14, 2)->default(0.00);
             $table->decimal('current_amount', 14, 2)->default(0.00);
 
             $table->boolean('is_active')->default(true)->index();
+            $table->boolean('is_featured')->default(false)->index();
             $table->date('end_date')->nullable();
 
             $table->softDeletes();

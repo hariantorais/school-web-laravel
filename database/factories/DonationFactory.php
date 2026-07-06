@@ -2,29 +2,33 @@
 
 namespace Database\Factories;
 
-use App\Models\Donation;
+use App\Models\DonationCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 class DonationFactory extends Factory
 {
-    protected $model = Donation::class;
-
     public function definition(): array
     {
-        $title = $this->faker->unique()->sentence(4);
-        $targetAmount = $this->faker->randomElement([10000000, 25000000, 50000000, 100000000]); // 10jt - 100jt
+        $title = $this->faker->sentence(3);
+        $type = $this->faker->randomElement(['one_time', 'one_time', 'recurring_open']); // 66.6% one_time
+        $isOneTime = $type === 'one_time';
 
         return [
-            'title'          => rtrim($title, '.'),
-            'slug'           => Str::slug($title),
-            'description'    => '<p>' . implode('</p><p>', $this->faker->paragraphs(3)) . '</p>', // Format HTML Trix
-            'image_path'     => null, // Bisa diisi default jika ada file dummy
-            'target_amount'  => $targetAmount,
-            'current_amount' => 0, // Akan dihitung otomatis dari transaksi sukses di Seeder
-            'is_active'      => $this->faker->boolean(85), // 85% aktif
-            'end_date'       => $this->faker->dateTimeBetween('+1 months', '+6 months')->format('Y-m-d'),
-            'created_at'     => $this->faker->dateTimeBetween('-2 months', 'now'),
+            'title' => $title,
+            'slug' => Str::slug($title) . '-' . $this->faker->unique()->randomNumber(4),
+            'description' => $this->faker->paragraph(4),
+            'image_path' => null,
+
+            // 🔥 SOLUSI SMART: Jika di DB ada kategori, pakai yang acak. Jika kosong, OTOMATIS buatkan 1 kategori baru.
+            'donation_category_id' => DonationCategory::inRandomOrder()->first()?->id
+                ?? DonationCategory::factory(),
+
+            'type' => $type,
+            'target_amount' => $isOneTime ? $this->faker->numberBetween(10_000_000, 500_000_000) : 0,
+            'current_amount' => 0,
+            'is_active' => true,
+            'end_date' => $isOneTime ? $this->faker->dateTimeBetween('+1 week', '+6 months') : null,
         ];
     }
 }

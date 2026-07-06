@@ -12,19 +12,25 @@ class DonationService
 {
    use HasImageProcess;
 
-
    /**
     * Mengambil data program donasi dengan paginasi dan filter multi-opsi
     */
    public function getAllPaginated(array $filters = [], int $perPage = 10)
    {
       return Donation::query()
+         // Filter 1: Pencarian teks berdasarkan judul
          ->when(!empty($filters['search']), function ($query) use ($filters) {
             $query->where('title', 'like', "%{$filters['search']}%");
          })
+         // Filter 2: Status Keaktifan (is_active)
          ->when(isset($filters['status']) && $filters['status'] !== '', function ($query) use ($filters) {
             $query->where('is_active', $filters['status']);
          })
+         // 🆕 Filter 3: Sifat / Tipe Program (one_time, recurring_open, recurring_subscription)
+         ->when(!empty($filters['type']), function ($query) use ($filters) {
+            $query->where('type', $filters['type']);
+         })
+         // Filter 4: Rentang Target Dana (Hanya berlaku untuk tipe one_time)
          ->when(!empty($filters['target_range']), function ($query) use ($filters) {
             match ($filters['target_range']) {
                'under_10m'  => $query->where('target_amount', '<', 10000000),
@@ -50,13 +56,14 @@ class DonationService
       DB::beginTransaction();
 
       try {
-         // REVISI 2: Otomatisasi Pembuatan Slug Unik saat insert data baru
+         // Otomatisasi Pembuatan Slug Unik saat insert data baru
          $slug = Str::slug($data['title']);
          if (Donation::where('slug', $slug)->exists()) {
             $slug = $slug . '-' . Str::lower(Str::random(5));
          }
          $data['slug'] = $slug;
 
+         // Kelola File Gambar melalui Trait
          if ($imageFile) {
             $imagePath = $this->compressAndStore(
                file: $imageFile,
@@ -65,9 +72,10 @@ class DonationService
                quality: 80
             );
 
-            // Menjamin key masuk sesuai field database Anda
             $data['image_path'] = $imagePath;
-            unset($data['image']);
+            if (isset($data['image'])) {
+               unset($data['image']);
+            }
          }
 
          $donation = Donation::create($data);
@@ -95,13 +103,14 @@ class DonationService
       try {
          $donation = Donation::findOrFail($id);
 
-         // REVISI 3: Perbarui Slug jika admin mengubah judul program donasi saat edit
+         // Perbarui Slug jika admin mengubah judul program donasi saat edit
          $slug = Str::slug($data['title']);
          if (Donation::where('slug', $slug)->where('id', '!=', $id)->exists()) {
             $slug = $slug . '-' . Str::lower(Str::random(5));
          }
          $data['slug'] = $slug;
 
+         // Kelola Gambar Baru dan Hapus Gambar Lama jika ada upload baru
          if ($newImageFile) {
             $newImagePath = $this->compressAndStore(
                file: $newImageFile,
@@ -110,11 +119,12 @@ class DonationService
                quality: 80
             );
 
-            // Menjamin key masuk ke field database image_path Anda
             $data['image_path'] = $newImagePath;
-            unset($data['image']);
+            if (isset($data['image'])) {
+               unset($data['image']);
+            }
 
-            // Panggil fungsi deleteImage dari Trait untuk hapus gambar lama agar storage vps hemat
+            // Hapus fisik berkas lama agar storage VPS tetap hemat
             if ($donation->image_path) {
                $this->deleteImage($donation->image_path);
             }
@@ -136,7 +146,7 @@ class DonationService
    }
 
    /**
-    * Menghapus Program Donasi Sekaligus Gambarnya dari Storage Disk
+    * Menghapus Program Donasi (Mendukung Sistem SoftDeletes Aman)
     * @param int $id
     * @return bool
     * @throws Exception
@@ -148,14 +158,38 @@ class DonationService
       try {
          $donation = Donation::findOrFail($id);
 
-         // 1. Simpan path gambar sebelum baris data di database dihapus
-         $imagePath = $donation->image_path;
-
-         // 2. Hapus data dari tabel database
+         // ⚠️ KOREKSI SOFT DELETES: 
+         // Karena skema DB menggunakan SoftDeletes, data record di tabel tidak benar-benar hilang.
+         // Berkas fisik gambar JANGAN dihapus sekarang agar saat admin melakukan RESTORE, gambar tidak rusak.
          $deleted = $donation->delete();
 
-         // 3. Jika database sukses terhapus, hapus fisik gambar WebP di storage server
-         if ($deleted && $imagePath) {
+         DB::commit();
+         return $deleted;
+      } catch (Exception $e) {
+         DB::rollBack();
+         throw new Exception('Gagal menghapus program donasi: ' . $e->getMessage());
+      }
+   }
+
+   /**
+    * 🆕 PROGRAM TAMBAHAN: Hancurkan Data Permanen beserta Berkas Fisik Gambarnya
+    * @param int $id
+    * @return bool
+    * @throws Exception
+    */
+   public function forceDelete(int $id): bool
+   {
+      DB::beginTransaction();
+
+      try {
+         // Ambil data termasuk yang sudah berstatus terhapus sementara (Soft Deleted)
+         $donation = Donation::onlyTrashed()->findOrFail($id);
+         $imagePath = $donation->image_path;
+
+         $forceDeleted = $donation->forceDelete();
+
+         // Jika data permanen hilang dari DB, baru hapus aman berkas fisik gambarnya
+         if ($forceDeleted && $imagePath) {
             $this->deleteImage($imagePath);
          }
 
@@ -163,7 +197,7 @@ class DonationService
          return true;
       } catch (Exception $e) {
          DB::rollBack();
-         throw new Exception('Gagal menghapus program donasi: ' . $e->getMessage());
+         throw new Exception('Gagal memusnahkan data program donasi: ' . $e->getMessage());
       }
    }
 }

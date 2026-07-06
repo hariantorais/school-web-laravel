@@ -54,6 +54,8 @@
     @include('components.layouts.partials.home.tacher-section')
 
     @include('components.layouts.partials.home.facility-section')
+    @include('components.layouts.partials.home.testimonial-section')
+
 
 
     <livewire:home.recent-posts />

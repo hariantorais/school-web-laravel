@@ -1,197 +1,83 @@
-<section id="testimonial" class="py-24 relative overflow-hidden">
-    <!-- Background dengan efek modern -->
-    <div class="absolute inset-0 z-0">
-        <div class="absolute inset-0 bg-gradient-to-br from-white via-[#FDFBF7] to-[#FDFBF7]"></div>
-        <div
-            class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-[0.015]">
+{{-- ========================================================================= --}}
+{{-- TESTIMONI SECTION --}}
+{{-- ========================================================================= --}}
+@php
+    use App\Models\Testimonial;
+    $testimonials = Testimonial::active()->ordered()->limit(6)->get();
+@endphp
+
+@if ($testimonials->isNotEmpty())
+    <section id="testimoni" class="py-12 sm:py-20 bg-gradient-to-br from-slate-50 to-slate-100 relative overflow-hidden">
+        {{-- Ornamen Latar Belakang --}}
+        <div class="absolute inset-0 z-0 pointer-events-none opacity-40">
+            <div class="absolute top-0 right-0 w-72 h-72 bg-[#A31D1D]/5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 w-72 h-72 bg-[#D4AF37]/5 rounded-full blur-3xl"></div>
         </div>
 
-        <!-- Efek blur ornament -->
-        <div class="absolute top-20 left-0 w-72 h-72 bg-[#A31D1D]/5 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-20 right-0 w-72 h-72 bg-[#D4AF37]/5 rounded-full blur-3xl"></div>
-        <div
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-[#A31D1D]/[0.02] to-[#D4AF37]/[0.02] rounded-full blur-3xl">
-        </div>
-    </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
-        <!-- Header dengan gaya baru -->
-        <div class="text-center max-w-2xl mx-auto space-y-4 mb-16" data-aos="fade-up">
-            <div class="flex items-center justify-center gap-3">
-                <span class="h-px w-8 bg-gradient-to-r from-transparent to-[#A31D1D]"></span>
-                <span
-                    class="text-xs sm:text-sm font-bold text-[#A31D1D] uppercase tracking-widest bg-[#A31D1D]/10 backdrop-blur-sm px-4 py-2 rounded-full inline-block border border-[#A31D1D]/20">
-                    💬 Amanah & Publik
-                </span>
-                <span class="h-px w-8 bg-gradient-to-l from-transparent to-[#A31D1D]"></span>
+            {{-- Header Section --}}
+            <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-16 space-y-3">
+                <div class="flex items-center justify-center gap-3">
+                    <span class="h-px w-8 bg-gradient-to-r from-transparent to-[#A31D1D]"></span>
+                    <span
+                        class="text-xs sm:text-sm font-bold text-[#A31D1D] uppercase tracking-widest bg-[#A31D1D]/10 backdrop-blur-sm px-4 py-2 rounded-full inline-block border border-[#A31D1D]/20">
+                        Testimoni
+                    </span>
+                    <span class="h-px w-8 bg-gradient-to-l from-transparent to-[#A31D1D]"></span>
+                </div>
+                <h2 class="font-heading text-2xl sm:text-4xl font-extrabold text-[#1E293B] leading-tight">
+                    Kata <span class="text-[#A31D1D]">Mereka</span>
+                </h2>
+                <p class="text-slate-500 text-xs sm:text-base max-w-xl mx-auto">
+                    Pendapat dan pengalaman dari orang tua santri, alumni, dan masyarakat
+                </p>
             </div>
-            <h2 class="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E293B] leading-tight">
-                Apa Kata <br />
-                <span class="text-[#A31D1D]">Mereka?</span>
-            </h2>
-            <p class="text-slate-500 text-sm sm:text-base max-w-2xl mx-auto">
-                Kisah nyata dari wali santri dan pandangan tokoh masyarakat terhadap komitmen pendidikan kami.
-            </p>
-        </div>
 
-        <!-- Testimonial Grid dengan efek modern -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8" data-aos="fade-up">
 
-            <!-- Testimoni 1 -->
-            <div
-                class="group relative bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden border border-slate-100">
-                <!-- Garis gradasi atas -->
-                <div
-                    class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#A31D1D] via-[#D4AF37] to-transparent">
-                </div>
 
-                <!-- Ornamen quote -->
-                <div
-                    class="absolute -top-4 -right-4 w-24 h-24 text-[#A31D1D]/5 group-hover:text-[#A31D1D]/10 transition-all duration-500">
-                    <svg class="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                    </svg>
-                </div>
-
-                <div class="relative z-10">
-                    <!-- Rating -->
-                    <div class="flex gap-1 mb-5">
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                    </div>
-
-                    <!-- Testimonial text -->
-                    <p class="text-slate-600 leading-relaxed text-sm sm:text-base mb-6">
-                        "Perkembangan karakter anak saya pasca setahun menempuh pendidikan di sini sangat berkesan
-                        bagi keluarga. Tidak hanya penguasaan hafalan Al-Qur'an yang kuat, tetapi adab kesantunan
-                        pribadinya terbentuk matang."
-                    </p>
-
-                    <!-- Profile -->
-                    <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
+            {{-- Grid Testimoni --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                @foreach ($testimonials as $testimonial)
+                    <div
+                        class="group bg-white rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-[#A31D1D]/20 relative overflow-hidden">
+                        {{-- Decorative Line --}}
                         <div
-                            class="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-[#A31D1D]/20 to-[#D4AF37]/20 ring-2 ring-white shadow-md">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Bapak H. Ilham Ridwan"
-                                class="w-full h-full object-cover" loading="lazy">
+                            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#A31D1D] to-[#D4AF37] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         </div>
-                        <div>
-                            <h4 class="font-heading font-bold text-[#1E293B] text-base">H. Ilham Ridwan</h4>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="inline-block w-1.5 h-1.5 bg-[#A31D1D] rounded-full"></span>
-                                <p class="text-[#A31D1D] text-[10px] font-semibold tracking-wide">Wali Santri Kelas VIII
-                                </p>
+
+                        {{-- Rating --}}
+                        <div class="flex items-center gap-1 mb-3">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <svg class="w-4 h-4 {{ $i <= $testimonial->rating ? 'text-yellow-400' : 'text-slate-200' }}"
+                                    fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                            @endfor
+                        </div>
+
+                        {{-- Content --}}
+                        <p
+                            class="text-sm sm:text-base text-slate-600 leading-relaxed line-clamp-4 group-hover:line-clamp-none transition-all duration-300 mb-4">
+                            "{{ $testimonial->content }}"
+                        </p>
+
+                        {{-- Author --}}
+                        <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
+                            <img src="{{ $testimonial->avatar_url }}" alt="{{ $testimonial->name }}"
+                                class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm">
+                            <div>
+                                <p class="font-bold text-sm sm:text-base text-[#1E293B]">{{ $testimonial->name }}</p>
+                                @if ($testimonial->role)
+                                    <p class="text-xs text-slate-400">{{ $testimonial->role }}</p>
+                                @endif
                             </div>
                         </div>
                     </div>
-                </div>
+                @endforeach
             </div>
 
-            <!-- Testimoni 2 -->
-            <div
-                class="group relative bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden border border-slate-100">
-                <!-- Garis gradasi atas -->
-                <div
-                    class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#A31D1D] via-[#D4AF37] to-transparent">
-                </div>
-
-                <!-- Ornamen quote -->
-                <div
-                    class="absolute -bottom-4 -left-4 w-24 h-24 text-[#A31D1D]/5 group-hover:text-[#A31D1D]/10 transition-all duration-500">
-                    <svg class="w-full h-full transform rotate-180" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                    </svg>
-                </div>
-
-                <div class="relative z-10">
-                    <!-- Rating -->
-                    <div class="flex gap-1 mb-5">
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                        <svg class="w-5 h-5 text-[#D4AF37] fill-current" viewBox="0 0 24 24">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                    </div>
-
-                    <!-- Testimonial text -->
-                    <p class="text-slate-600 leading-relaxed text-sm sm:text-base mb-6">
-                        "Pondok Pesantren Daarul Huffadz mempertahankan tradisi sanad yang otentik tanpa menutup
-                        mata terhadap kemajuan teknologi informasi. Ini integrasi ideal yang dibutuhkan umat masa
-                        kini."
-                    </p>
-
-                    <!-- Profile -->
-                    <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
-                        <div
-                            class="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-[#A31D1D]/20 to-[#D4AF37]/20 ring-2 ring-white shadow-md">
-                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Dr. H. Andi Syahputra"
-                                class="w-full h-full object-cover" loading="lazy">
-                        </div>
-                        <div>
-                            <h4 class="font-heading font-bold text-[#1E293B] text-base">Dr. H. Andi Syahputra</h4>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="inline-block w-1.5 h-1.5 bg-[#A31D1D] rounded-full"></span>
-                                <p class="text-[#A31D1D] text-[10px] font-semibold tracking-wide">Akademisi & Tokoh
-                                    Masyarakat</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-
-        <!-- Indikator Geser (Mobile) -->
-        <div class="flex justify-center items-center space-x-2 md:hidden mt-8">
-            <div class="w-6 h-1 bg-[#A31D1D] rounded-full"></div>
-            <div class="w-3 h-1 bg-slate-300 rounded-full"></div>
-            <div class="w-3 h-1 bg-slate-300 rounded-full"></div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Geser →</span>
-        </div>
-    </div>
-</section>
-
-<style>
-    .scrollbar-hide::-webkit-scrollbar {
-        display: none;
-    }
-
-    .scrollbar-hide {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-</style>
+    </section>
+@endif

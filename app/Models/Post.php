@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Post extends Model
 {
+    use HasFactory;
     protected $fillable = ['user_id', 'category_id', 'title', 'slug', 'featured_image', 'content', 'status', 'published_at'];
 
     protected $casts = [
@@ -43,7 +45,7 @@ class Post extends Model
 
                 // 2. Jika tidak ada gambar, kembalikan gambar placeholder aset sekolah resmi
                 //    Pastikan Anda menaruh file 'default-post.webp' di folder public/assets/images/
-                return asset('assets/images/default.webp');
+                return asset('images/default.jpeg');
             }
         );
     }

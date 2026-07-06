@@ -39,8 +39,7 @@
                 </a>
 
                 <!-- Profil -->
-                <a href="{{ request()->is('/') ? '#profile' : '/#profile' }}"
-                    class="transition-colors hover:text-[#A31D1D] pb-1">
+                <a href="{{ route('home.profil') }}" class="transition-colors hover:text-[#A31D1D] pb-1">
                     Profil
                 </a>
 
@@ -63,7 +62,7 @@
                 <!-- Warta Pondok -->
                 <a href="/posts" wire:navigate
                     class="pb-1 transition-colors hover:text-[#A31D1D] {{ request()->is('posts') || request()->is('post/*') ? 'text-[#A31D1D] border-b-2 border-[#A31D1D]' : '' }}">
-                    Warta Pondok
+                    Berita
                 </a>
             </nav>
 

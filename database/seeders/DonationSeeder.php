@@ -4,29 +4,40 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Donation;
-use App\Models\DonationTransaction; // Sesuaikan nama model transaksi Anda
+use App\Models\DonationTransaction;
+use App\Models\DonationCategory;
 
 class DonationSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Buat 10 Program Kampanye Donasi dummy terlebih dahulu
-        Donation::factory()->count(10)->create()->each(function ($donation) {
+        // Pastikan kategori udah ada
+        if (DonationCategory::count() === 0) {
+            $this->call(DonationCategorySeeder::class);
+        }
 
-            // 2. Untuk setiap donasi, buat antara 5 sampai 15 transaksi tiruan
-            $transactions = DonationTransaction::factory()
-                ->count(rand(5, 15))
-                ->create([
-                    'donation_id' => $donation->id, // Mengunci ke ID donasi saat ini
+        // 1. Buat 10 Program Kampanye Donasi
+        Donation::factory()
+            ->count(50)
+            ->create()
+            ->each(function ($donation) {
+
+                // 2. Buat 5-20 transaksi per donasi
+                $transactions = DonationTransaction::factory()
+                    ->count(rand(5, 20))
+                    ->create([
+                        'donation_id' => $donation->id,
+                    ]);
+
+                // 3. Hitung total dari transaksi 'success' aja
+                $totalSuccessAmount = $transactions
+                    ->where('status', 'success')
+                    ->sum('amount');
+
+                // 4. Update current_amount biar sinkron
+                $donation->update([
+                    'current_amount' => $totalSuccessAmount
                 ]);
-
-            // 3. Hitung total nominal dari transaksi yang berstatus 'success'
-            $totalSuccessAmount = $transactions->where('status', 'success')->sum('amount');
-
-            // 4. Update kolom current_amount di tabel donations agar sinkron murni
-            $donation->update([
-                'current_amount' => $totalSuccessAmount
-            ]);
-        });
+            });
     }
 }

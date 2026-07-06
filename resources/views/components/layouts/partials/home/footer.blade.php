@@ -26,9 +26,7 @@
                          </div>
                      </div>
                      <p class="text-xs text-slate-400 leading-relaxed text-left mt-3">
-                         Mewujudkan generasi penghafal Al-Qur'an berakhlak mulia yang dibekali ilmu syar'i, serta
-                         siap mengamalkan dan mengajarkan syari'at Islam secara kaffah di atas pemahaman Ahlussunnah
-                         wal Jama'ah.
+                         {{ get_settings('school_tagline') }}
                      </p>
                  </div>
 
@@ -89,8 +87,7 @@
                      <ul class="space-y-3 text-xs sm:text-sm text-slate-400 text-left mt-3">
                          <li class="flex items-start space-x-2.5">
                              <span class="text-[#D4AF37] shrink-0 mt-0.5">📍</span>
-                             <span class="leading-relaxed">Jl. Flamboyan RT 64 Perum Batu Ampar Lestari,
-                                 Balikpapan.</span>
+                             <span class="leading-relaxed">{{ get_settings('school_address') }}</span>
                          </li>
                          <li class="flex items-center space-x-2.5">
                              <span class="text-[#D4AF37] shrink-0">📞</span>
@@ -98,9 +95,14 @@
                                  class="hover:text-white transition-colors text-slate-300 font-semibold">0812-1614-0764</a>
                          </li>
                          <li class="flex items-center space-x-2.5">
+                             <span class="text-[#D4AF37] shrink-0">📞</span>
+                             <a href="tel:088247957504"
+                                 class="hover:text-white transition-colors text-slate-300 font-semibold">0882-4795-7504</a>
+                         </li>
+                         <li class="flex items-center space-x-2.5">
                              <span class="text-[#D4AF37] shrink-0">✉️</span>
                              <a href="mailto:info@daarulhuffadzbpn.sch.id"
-                                 class="hover:text-white transition-colors text-slate-300 break-all">info@daarulhuffadzbalikpapan.com</a>
+                                 class="hover:text-white transition-colors text-slate-300 break-all">{{ get_settings('school_email') }}</a>
                          </li>
                      </ul>
                  </div>
@@ -124,7 +126,7 @@
          <div
              class="pt-8 flex flex-col md:flex-row justify-between items-center text-[11px] sm:text-xs text-slate-500 gap-4">
              <span class="w-full md:w-auto text-center">© 2026 Pondok Pesantren Tahfidz Daarul
-                 Huffadz</span>
+                 Huffadz Balikpapan</span>
              <div class="flex space-x-4 font-medium">
                  <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
                  <span class="text-slate-800">|</span>

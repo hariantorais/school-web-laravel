@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call([
-            DonationSeeder::class,
+            InstitutionSeeder::class,
         ]);
     }
 }

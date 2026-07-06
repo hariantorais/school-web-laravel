@@ -25,7 +25,7 @@ return new class extends Migration
 
             // 2. DATA IDENTITAS DONATUR
             $table->string('donor_name', 100);
-            $table->string('donor_email', 100)->index();
+            $table->string('donor_email', 100)->nullable()->index();
             $table->string('donor_phone', 20)->nullable();
 
             // 3. NOMINAL & RECORD FINANSIAL

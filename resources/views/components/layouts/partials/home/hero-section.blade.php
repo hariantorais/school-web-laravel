@@ -21,23 +21,18 @@
              <!-- Badge -->
              <div
                  class="inline-flex items-center space-x-2 bg-[#A31D1D]/80 backdrop-blur-md border border-[#D4AF37]/40 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wider text-[#D4AF37] mb-8 shadow-lg">
-                 <span>Pondok Pesantren Daarul Huffadz Balik Papan</span>
+                 <span>{{ get_settings('school_name') }}</span>
              </div>
 
              <!-- Judul Utama -->
              <h1
                  class="font-heading text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight drop-shadow-xl">
-                 Mencetak Generasi
-                 <span class="text-[#D4AF37]">Qur'ani</span>,<br />
-                 Berakhlak Mulia dan<br />
-                 Berwawasan Global
+                 {{ get_settings('school_motto') }}
              </h1>
 
              <!-- Deskripsi -->
              <p class="text-slate-100 text-sm sm:text-base md:text-lg max-w-2xl leading-relaxed mt-8 drop-shadow-md">
-                 Berdiri sejak 2015 di Balikpapan, kami mencetak santri mandiri, hafizh Qur'an, berakhlak mulia,
-                 dengan
-                 jaminan 2 ijazah resmi <span class="text-[#D4AF37] font-semibold">(Negara & Pondok)</span>.
+                 {{ get_settings('school_tagline') }}
              </p>
 
 
