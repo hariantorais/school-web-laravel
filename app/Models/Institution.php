@@ -15,6 +15,7 @@ class Institution extends Model
         'slug',
         'logo',
         'favicon',
+        'profile_video_url',
         'vision',
         'mission',
         'motto',
@@ -22,10 +23,9 @@ class Institution extends Model
         'description',
         'history',
         'address',
-        'whatsapp',
-        'whatsapp_2',
         'email',
         'whatsapp',
+        'whatsapp_2',
         'facebook',
         'instagram',
         'youtube',
@@ -40,11 +40,17 @@ class Institution extends Model
         'is_active',
         'established_year',
         'accreditation',
+        'total_students',
+        'total_alumni',
+        'total_teachers',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'established_year' => 'integer',
+        'total_students' => 'integer',
+        'total_alumni' => 'integer',
+        'total_teachers' => 'integer',
     ];
 
     /**
@@ -68,7 +74,7 @@ class Institution extends Model
     {
         return $this->logo
             ? asset('storage/' . $this->logo)
-            : asset('images/logo.png');
+            : asset('images/default-logo.png');
     }
 
     /**
@@ -89,7 +95,6 @@ class Institution extends Model
         if (empty($this->vision)) {
             return [];
         }
-
         return array_filter(explode("\n", trim($this->vision)));
     }
 
@@ -101,7 +106,6 @@ class Institution extends Model
         if (empty($this->mission)) {
             return [];
         }
-
         return array_filter(explode("\n", trim($this->mission)));
     }
 

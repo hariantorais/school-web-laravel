@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->string('favicon')->nullable();
 
+            $table->string('profile_video_url')->nullable();
+
+
+
             // Visi & Misi
             $table->text('vision')->nullable();
             $table->text('mission')->nullable();
@@ -56,6 +60,10 @@ return new class extends Migration
             // Informasi Tambahan
             $table->year('established_year')->nullable();
             $table->string('accreditation')->nullable();
+
+            $table->integer('total_students')->default(0);
+            $table->integer('total_alumni')->default(0);
+            $table->integer('total_teachers')->default(0);
 
             $table->timestamps();
         });

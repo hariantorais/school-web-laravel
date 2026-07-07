@@ -55,8 +55,6 @@ new class extends Component {
         </button>
     </x-slot>
 
-
-
     <form id="institution-form" wire:submit.prevent="save">
         {{-- Tab Navigation --}}
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-1.5 mb-6 flex flex-wrap gap-1">
@@ -72,18 +70,7 @@ new class extends Component {
                     Informasi Dasar
                 </div>
             </button>
-            <button type="button" @click="activeTab = 'logo'"
-                class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap"
-                :class="activeTab === 'logo' ? 'bg-[var(--accent-primary)] text-white shadow-sm' :
-                    'text-slate-600 hover:bg-slate-100'">
-                <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    Logo
-                </div>
-            </button>
+
             <button type="button" @click="activeTab = 'deskripsi'"
                 class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap"
                 :class="activeTab === 'deskripsi' ? 'bg-[var(--accent-primary)] text-white shadow-sm' :
@@ -132,6 +119,19 @@ new class extends Component {
                     SEO
                 </div>
             </button>
+            {{-- TAB STATISTIK --}}
+            <button type="button" @click="activeTab = 'statistik'"
+                class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap"
+                :class="activeTab === 'statistik' ? 'bg-[var(--accent-primary)] text-white shadow-sm' :
+                    'text-slate-600 hover:bg-slate-100'">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Statistik
+                </div>
+            </button>
         </div>
 
         {{-- Tab Content --}}
@@ -148,66 +148,6 @@ new class extends Component {
                     placeholder="Masukkan misi institusi (pisahkan dengan baris baru)" rows="6" />
             </div>
 
-            {{-- Tab 2: Logo --}}
-            <div x-show="activeTab === 'logo'" x-transition:enter.duration.300ms.opacity class="space-y-6">
-                <h3 class="text-sm font-semibold text-slate-700 mb-4">Logo & Favicon</h3>
-
-                {{-- Logo --}}
-                <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3">
-                        Logo
-                    </label>
-                    <div class="flex flex-col sm:flex-row items-center gap-6">
-                        <div
-                            class="w-32 h-32 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <img src="{{ $this->form->getLogoUrl() }}" alt="Logo"
-                                class="w-full h-full object-contain p-3">
-                        </div>
-                        <div class="flex-1 w-full">
-                            <input type="file" wire:model="form.logo" accept="image/*"
-                                class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-[var(--accent-primary)] file:text-white hover:file:bg-[var(--accent-hover)] cursor-pointer">
-                            <p class="text-[10px] text-slate-400 mt-1.5">Format: JPG, PNG, SVG. Maks 2MB</p>
-                            @error('form.logo')
-                                <span class="text-[10px] text-rose-600 font-bold mt-1 block">{{ $message }}</span>
-                            @enderror
-                            @if ($form->oldLogo)
-                                <button type="button" wire:click="removeLogo"
-                                    class="text-red-500 text-xs hover:text-red-700 mt-2 transition-colors">
-                                    Hapus Logo
-                                </button>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Favicon --}}
-                <div class="pt-6 border-t border-slate-200/60">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3">
-                        Favicon
-                    </label>
-                    <div class="flex flex-col sm:flex-row items-center gap-6">
-                        <div
-                            class="w-16 h-16 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <img src="{{ $this->form->getFaviconUrl() }}" alt="Favicon"
-                                class="w-full h-full object-contain p-2">
-                        </div>
-                        <div class="flex-1 w-full">
-                            <input type="file" wire:model="form.favicon" accept="image/*"
-                                class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-[var(--accent-primary)] file:text-white hover:file:bg-[var(--accent-hover)] cursor-pointer">
-                            <p class="text-[10px] text-slate-400 mt-1.5">Format: ICO, PNG. Maks 1MB</p>
-                            @error('form.favicon')
-                                <span class="text-[10px] text-rose-600 font-bold mt-1 block">{{ $message }}</span>
-                            @enderror
-                            @if ($form->oldFavicon)
-                                <button type="button" wire:click="removeFavicon"
-                                    class="text-red-500 text-xs hover:text-red-700 mt-2 transition-colors">
-                                    Hapus Favicon
-                                </button>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {{-- Tab 3: Deskripsi & Sejarah --}}
             <div x-show="activeTab === 'deskripsi'" x-transition:enter.duration.300ms.opacity class="space-y-4">
@@ -269,6 +209,25 @@ new class extends Component {
                     <x-form.input label="Timezone" name="form.timezone" placeholder="Asia/Jakarta" />
                     <x-form.input label="Locale" name="form.locale" placeholder="id" />
                 </div>
+            </div>
+
+            {{-- Tab 7: Statistik --}}
+            <div x-show="activeTab === 'statistik'" x-transition:enter.duration.300ms.opacity class="space-y-4">
+                <h3 class="text-sm font-semibold text-slate-700 mb-4">Data Statistik</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <x-form.input label="Jumlah Santri Aktif" name="form.total_students" type="number"
+                        placeholder="0" />
+                    <x-form.input label="Jumlah Alumni Hafizh" name="form.total_alumni" type="number"
+                        placeholder="0" />
+                    <x-form.input label="Jumlah Asatidzah" name="form.total_teachers" type="number"
+                        placeholder="0" />
+                </div>
+
+                <x-form.input label="URL Video Profil (YouTube)" name="form.profile_video_url" type="url"
+                    placeholder="https://www.youtube.com/embed/VIDEO_ID" />
+                <p class="text-[10px] text-slate-400 -mt-2">Masukkan URL embed YouTube, contoh:
+                    https://www.youtube.com/embed/VIDEO_ID</p>
             </div>
         </div>
     </form>

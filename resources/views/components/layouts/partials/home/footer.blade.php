@@ -17,15 +17,9 @@
                             $initial = $name ? substr($name, 0, 2) : 'PP';
                         @endphp
 
-                        @if ($logo && !str_contains($logo, 'default-logo.png'))
-                            <img src="{{ $logo }}" alt="{{ $name }}"
-                                class="w-10 h-10 rounded-xl object-cover border border-[#D4AF37]/20 shadow-lg shrink-0 bg-white p-1">
-                        @else
-                            <div
-                                class="w-10 h-10 rounded-xl bg-white border border-[#D4AF37]/20 shadow-lg shrink-0 flex items-center justify-center text-[#A31D1D] font-bold text-sm">
-                                {{ $initial }}
-                            </div>
-                        @endif
+                        <img src="{{ $logo }}" alt="{{ $name }}"
+                            class="w-10 h-10 rounded-xl object-cover border border-[#D4AF37]/20 shadow-lg shrink-0 bg-white p-1">
+
 
                         <div>
                             <h5 class="font-heading text-sm sm:text-base font-bold text-white tracking-wide">

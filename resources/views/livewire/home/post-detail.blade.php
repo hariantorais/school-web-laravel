@@ -41,6 +41,47 @@ new class extends Component {
 
 <div>
 
+
+    @php
+        $post = $this->post;
+        $schoolName = get_settings('school_name') ?? 'Pondok Pesantren Daarul Huffadz';
+        $postTitle = $post->title . ' - ' . $schoolName;
+        $postExcerpt = Str::limit(strip_tags($post->content ?? ''), 160);
+        $postImage = $post->featured_image
+            ? asset('storage/' . $post->featured_image)
+            : get_settings('school_logo') ?? asset('images/masjid.jpg');
+        $postCategory = $post->category->name ?? 'Artikel';
+        $postUrl = url()->current();
+        $postAuthor = $post->user->name ?? 'Admin';
+        $postDate = $post->published_at ?? $post->created_at;
+    @endphp
+
+    @section('title', $postTitle)
+    @section('meta_description', $postExcerpt)
+    @section('meta_keywords', $post->title . ', pondok pesantren, ' . $postCategory . ', daarul huffadz, balikpapan')
+    @section('canonical', $postUrl)
+
+    @section('og_type', 'article')
+    @section('og_url', $postUrl)
+    @section('og_title', $postTitle)
+    @section('og_description', $postExcerpt)
+    @section('og_image', $postImage)
+
+    @section('twitter_title', $postTitle)
+    @section('twitter_description', $postExcerpt)
+    @section('twitter_image', $postImage)
+
+    @section('extra_meta')
+        <meta property="article:published_time" content="{{ $postDate }}">
+        <meta property="article:author" content="{{ $postAuthor }}">
+        <meta property="article:section" content="{{ $postCategory }}">
+        <meta name="robots" content="index, follow">
+        @if ($post->featured_image)
+            <meta property="og:image:width" content="1200">
+            <meta property="og:image:height" content="630">
+        @endif
+    @endsection
+
     <section class="relative pt-32 pb-16 lg:pt-40 lg:pb-24 overflow-hidden">
         <div class="absolute inset-0 z-0">
             <div class="absolute inset-0 bg-gradient-to-br from-[#1E293B] via-[#2D3A4F] to-[#1E293B]"></div>
@@ -54,7 +95,8 @@ new class extends Component {
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-3xl mx-auto text-center" data-aos="fade-up">
 
-                <div class="inline-flex items-center gap-2 bg-[#A31D1D]/90 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                <div
+                    class="inline-flex items-center gap-2 bg-[#A31D1D]/90 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                     <span class="w-2 h-2 bg-[#D4AF37] rounded-full animate-pulse"></span>
                     <span class="text-xs font-semibold text-[#D4AF37] uppercase tracking-wider">
                         {{ $post->category->name }}

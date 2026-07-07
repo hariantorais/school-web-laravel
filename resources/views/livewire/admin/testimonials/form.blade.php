@@ -94,32 +94,6 @@ new class extends Component {
         <x-form.textarea label="Konten Testimoni" name="form.content" placeholder="Tulis testimoni di sini..."
             rows="4" />
 
-        {{-- Avatar --}}
-        <div>
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                Avatar (Opsional)
-            </label>
-            <div class="flex items-center gap-4">
-                @if ($form->oldAvatar || $form->name)
-                    <img src="{{ $form->getAvatarUrl() }}" alt="Avatar"
-                        class="w-16 h-16 rounded-full object-cover border-2 border-slate-200">
-                @endif
-                <div class="flex-1">
-                    <input type="file" wire:model="form.avatar" accept="image/*"
-                        class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-[var(--accent-primary)] file:text-white hover:file:bg-[var(--accent-hover)] cursor-pointer">
-                    <p class="text-[10px] text-slate-400 mt-1.5">Format: JPG, PNG. Maks 2MB</p>
-                    @error('form.avatar')
-                        <span class="text-[10px] text-rose-600 font-bold mt-1 block">{{ $message }}</span>
-                    @enderror
-                    @if ($form->oldAvatar)
-                        <button type="button" wire:click="removeAvatar"
-                            class="text-red-500 text-xs hover:text-red-700 mt-2 transition-colors">
-                            Hapus Avatar
-                        </button>
-                    @endif
-                </div>
-            </div>
-        </div>
 
         {{-- Status & Order --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

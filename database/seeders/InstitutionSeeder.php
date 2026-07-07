@@ -54,6 +54,13 @@ class InstitutionSeeder extends Seeder
                 'established_year' => 2015,
                 'accreditation' => 'Terakreditasi Unggul',
                 'is_active' => true,
+
+
+                'profile_video_url' => 'https://www.youtube.com/embed/ADoo8RD8sDI?rel=0&modestbranding=1',
+
+                'total_students' => 350,
+                'total_alumni' => 180,
+                'total_teachers' => 32,
             ]
         );
     }

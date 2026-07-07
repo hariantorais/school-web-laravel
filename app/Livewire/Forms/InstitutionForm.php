@@ -89,6 +89,19 @@ class InstitutionForm extends Form
     #[Validate('nullable|image|max:1024')]
     public $favicon = null;
 
+    // ===== DATA STATISTIK =====
+    #[Validate('nullable|integer|min:0')]
+    public $total_students = 0;
+
+    #[Validate('nullable|integer|min:0')]
+    public $total_alumni = 0;
+
+    #[Validate('nullable|integer|min:0')]
+    public $total_teachers = 0;
+
+    #[Validate('nullable|url|max:255')]
+    public string $profile_video_url = '';
+
     public ?string $oldLogo = null;
     public ?string $oldFavicon = null;
 
@@ -119,13 +132,17 @@ class InstitutionForm extends Form
         $this->locale = $institution->locale ?? 'id';
         $this->established_year = $institution->established_year ?? null;
         $this->accreditation = $institution->accreditation ?? '';
+        $this->total_students = $institution->total_students ?? 0;
+        $this->total_alumni = $institution->total_alumni ?? 0;
+        $this->total_teachers = $institution->total_teachers ?? 0;
+        $this->profile_video_url = $institution->profile_video_url ?? '';
         $this->oldLogo = $institution->logo ?? null;
         $this->oldFavicon = $institution->favicon ?? null;
     }
 
     public function save(): void
     {
-        // Validasi manual untuk established_year
+        // Validasi manual
         $rules = [
             'name' => 'required|string|max:255',
             'vision' => 'nullable|string',
@@ -153,6 +170,10 @@ class InstitutionForm extends Form
             'accreditation' => 'nullable|string|max:255',
             'logo' => 'nullable|image|max:2048',
             'favicon' => 'nullable|image|max:1024',
+            'total_students' => 'nullable|integer|min:0',
+            'total_alumni' => 'nullable|integer|min:0',
+            'total_teachers' => 'nullable|integer|min:0',
+            'profile_video_url' => 'nullable|url|max:255',
         ];
 
         $this->validate($rules);
@@ -182,8 +203,13 @@ class InstitutionForm extends Form
             'locale' => $this->locale,
             'established_year' => $this->established_year,
             'accreditation' => $this->accreditation,
+            'total_students' => $this->total_students ?? 0,
+            'total_alumni' => $this->total_alumni ?? 0,
+            'total_teachers' => $this->total_teachers ?? 0,
+            'profile_video_url' => $this->profile_video_url,
         ];
 
+        // Handle Logo Upload
         if ($this->logo) {
             if ($this->oldLogo) {
                 Storage::disk('public')->delete($this->oldLogo);
@@ -191,6 +217,7 @@ class InstitutionForm extends Form
             $data['logo'] = $this->logo->store('institutions', 'public');
         }
 
+        // Handle Favicon Upload
         if ($this->favicon) {
             if ($this->oldFavicon) {
                 Storage::disk('public')->delete($this->oldFavicon);
