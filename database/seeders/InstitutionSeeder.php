@@ -37,7 +37,7 @@ class InstitutionSeeder extends Seeder
                 'address' => 'Jl. Flamboyan RT 64 Perum Batu Ampar Lestari, Balikpapan',
                 'email' => 'info@daarulhuffadzbalikpapan.com',
                 'whatsapp' => '6288247957504',
-                'whatsapp_2' => '081216140764',
+                'whatsapp_2' => '6281216140764',
 
                 'facebook' => 'https://facebook.com/daarulhuffadz',
                 'instagram' => 'https://instagram.com/daarulhuffadz',
