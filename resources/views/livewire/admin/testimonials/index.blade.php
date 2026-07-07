@@ -260,9 +260,6 @@ new class extends Component {
     @endif
 
     {{-- MODAL FORM --}}
-    <x-ui.modal name="modal-testimonial" title="Form Testimoni">
-        <livewire:admin.testimonials.form />
-    </x-ui.modal>
-
+    <livewire:admin.testimonials.form />
     <x-ui.confirm confirmLabel="Ya, Hapus Testimoni" />
 </div>
