@@ -62,7 +62,7 @@ function navigations()
             ],
             // Institusi
             [
-               'name' => 'Pengaturan',
+               'name' => 'Institusi',
                'icon' => 'building-office',
                'route' => 'admin.institution.form',
                'active_on' => ['admin.institution.form'],

@@ -257,9 +257,7 @@ new class extends Component {
     </div>
 
     {{-- MODAL FORM --}}
-    <x-ui.modal name="modal-user" title="Form Pengguna">
-        <livewire:admin.users.form />
-    </x-ui.modal>
+    <livewire:admin.users.form />
 
     <x-ui.confirm confirmLabel="Ya, Hapus Pengguna" />
 </div>
