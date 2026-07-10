@@ -69,7 +69,7 @@ new #[Layout('layouts.guest')] class extends Component {
                             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                 </span>
-                <input type="email" id="email" wire:model="email" placeholder="admin@sekolah.sch.id"
+                <input type="email" id="email" wire:model="email" placeholder="admin@email.com"
                     class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#A31D1D]/20 focus:border-[#A31D1D] transition-all">
             </div>
             @error('email')
