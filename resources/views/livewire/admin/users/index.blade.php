@@ -219,7 +219,9 @@ new class extends Component {
                             <td class="px-6 py-4 text-slate-500 text-xs">{{ $user->created_at->format('d M Y') }}</td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
-                                    <x-table.actions :id="$user->id" modalName="modal-user" />
+                                    @if ($user->id != 1)
+                                        <x-table.actions :id="$user->id" modalName="modal-user" />
+                                    @endif
                                 </div>
                             </td>
                         </tr>
