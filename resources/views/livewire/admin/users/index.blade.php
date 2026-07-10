@@ -236,7 +236,7 @@ new class extends Component {
                                     </svg>
                                     <p>Belum ada pengguna</p>
                                     <button type="button" @click="$dispatch('open-modal', { name: 'modal-user' })"
-                                        class="text-[var(--accent-primary)] hover:underline text-sm">
+                                        class="text-(--accent-primary) hover:underline text-sm">
                                         Tambah pengguna pertama
                                     </button>
                                 </div>

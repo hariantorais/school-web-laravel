@@ -17,6 +17,7 @@ Volt::route('/profil', 'home.profil')->name('home.profil');
 
 Route::middleware('guest')->group(function () {
     // Rute Halaman Login Utama
+    
     Volt::route('/login', 'auth.login')->name('login');
 });
 
