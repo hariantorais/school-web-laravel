@@ -47,20 +47,44 @@ new class extends Component {
     public function delete(int $id)
     {
         try {
-            $user = User::findOrFail($id);
+            $user = User::withCount(['posts', 'comments', 'orders'])->findOrFail($id);
 
             if ($user->id === auth()->id()) {
                 $this->dispatch('toast', type: 'error', message: 'Tidak bisa menghapus akun sendiri!');
                 return;
             }
 
+            // Cek relasi
+            $related = [];
+            if ($user->posts_count > 0) {
+                $related[] = "{$user->posts_count} postingan";
+            }
+            if ($user->comments_count > 0) {
+                $related[] = "{$user->comments_count} komentar";
+            }
+            if ($user->orders_count > 0) {
+                $related[] = "{$user->orders_count} pesanan";
+            }
+
+            if (!empty($related)) {
+                $this->dispatch('toast', type: 'error', message: 'Pengguna tidak dapat dihapus karena masih memiliki: ' . implode(', ', $related));
+                return;
+            }
+
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
             }
+
             $user->delete();
             $this->dispatch('toast', type: 'success', message: 'Pengguna berhasil dihapus!');
+        } catch (ModelNotFoundException $e) {
+            $this->dispatch('toast', type: 'error', message: 'Pengguna tidak ditemukan!');
+        } catch (QueryException $e) {
+            Log::error('Delete user query error: ' . $e->getMessage());
+            $this->dispatch('toast', type: 'error', message: 'Pengguna tidak dapat dihapus karena masih terhubung dengan data lain!');
         } catch (\Exception $e) {
-            $this->dispatch('toast', type: 'error', message: 'Gagal menghapus: ' . $e->getMessage());
+            Log::error('Delete user error: ' . $e->getMessage());
+            $this->dispatch('toast', type: 'error', message: 'Terjadi kesalahan saat menghapus pengguna!');
         }
     }
 
@@ -195,34 +219,7 @@ new class extends Component {
                             <td class="px-6 py-4 text-slate-500 text-xs">{{ $user->created_at->format('d M Y') }}</td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
-                                    <button type="button"
-                                        @click="$dispatch('open-modal', { name: 'modal-user', id: {{ $user->id }} })"
-                                        class="p-1.5 text-slate-400 hover:text-[var(--accent-primary)] transition-colors rounded-lg hover:bg-slate-100">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                    </button>
-
-                                    @if ($user->id !== auth()->id())
-                                        <button type="button" wire:click="toggleStatus({{ $user->id }})"
-                                            class="p-1.5 {{ $user->is_active ? 'text-amber-400 hover:text-amber-600' : 'text-green-400 hover:text-green-600' }} transition-colors rounded-lg hover:bg-slate-100">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </button>
-                                        <button type="button" wire:click="delete({{ $user->id }})"
-                                            wire:confirm="Yakin ingin menghapus pengguna ini?"
-                                            class="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-slate-100">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    @endif
+                                    <x-table.actions :id="$user->id" modalName="modal-user" />
                                 </div>
                             </td>
                         </tr>
@@ -249,15 +246,10 @@ new class extends Component {
         </div>
 
         {{-- PAGINATION --}}
-        @if ($this->users->hasPages())
-            <div class="px-6 py-4 border-t border-slate-200/60">
-                {{ $this->users->links() }}
-            </div>
-        @endif
+        <x-table.pagination :paginator="$this->users" />
+
+        {{-- MODAL FORM --}}
+        <livewire:admin.users.form />
+
+        <x-ui.confirm confirmLabel="Ya, Hapus Pengguna" />
     </div>
-
-    {{-- MODAL FORM --}}
-    <livewire:admin.users.form />
-
-    <x-ui.confirm confirmLabel="Ya, Hapus Pengguna" />
-</div>

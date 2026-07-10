@@ -201,29 +201,7 @@ new class extends Component {
                         </div>
                     </div>
                     <div class="flex items-center gap-1">
-                        <button type="button"
-                            @click="$dispatch('open-modal', { name: 'modal-testimonial', id: {{ $testimonial->id }} })"
-                            class="p-1.5 text-slate-400 hover:text-[var(--accent-primary)] transition-colors rounded-lg hover:bg-slate-100">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                        </button>
-                        <button type="button" wire:click="toggleStatus({{ $testimonial->id }})"
-                            class="p-1.5 {{ $testimonial->is_active ? 'text-green-500 hover:text-green-700' : 'text-slate-400 hover:text-slate-600' }} transition-colors rounded-lg hover:bg-slate-100">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>
-                        </button>
-                        <button type="button" wire:click="delete({{ $testimonial->id }})"
-                            wire:confirm="Yakin ingin menghapus testimoni ini?"
-                            class="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-slate-100">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button>
+                        <x-table.actions :id="$testimonial->id" modalName="modal-testimonial" />
                     </div>
                 </div>
 
@@ -239,8 +217,7 @@ new class extends Component {
             <div class="col-span-1 md:col-span-2 lg:col-span-3">
                 <div class="flex flex-col items-center justify-center py-16 text-center">
                     <div class="p-4 bg-slate-100 rounded-full mb-4">
-                        <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>

@@ -83,6 +83,16 @@
                             x-transition:enter-end="opacity-100 translate-y-0"
                             class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50 text-sm">
 
+                            <button type="button"
+                                @click="$dispatch('open-modal', {name: 'modal-user', id: '{{ auth()->guard('web')->user()->id }}' })"
+                                class="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors duration-150 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Pengaturan Akun
+                            </button>
+
                             {{-- pengaturan institusi --}}
 
                             <a href="{{ route('admin.institution.form') }}" wire:navigate
@@ -112,12 +122,16 @@
                         </div>
                     </div>
                 </div>
+                @if (!request()->routeIs('admin.users.index'))
+                    <livewire:admin.users.form />
+                @endif
             </header>
 
             <main class="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{{ $title ?? '' }}</h1>
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{{ $title ?? '' }}
+                        </h1>
                         <p class="text-xs text-slate-500 mt-0.5">
                             {{ $subhead ?? '' }}
                         </p>
