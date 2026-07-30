@@ -214,15 +214,7 @@ new class extends Component {
                         </div>
                     </div>
 
-                    {{-- 🔥 INDIKATOR VIDEO DI BAWAH JUDUL (ALTERNATIF) --}}
-                    {{-- 
-                    @if ($post->youtube_url)
-                        <div class="flex items-center gap-1.5 text-[10px] text-red-600 font-semibold bg-red-50/80 px-2.5 py-1 rounded-lg border border-red-200/50 -mt-1">
-                            <x-heroicon-s-play class="w-3 h-3" />
-                            <span>Tersedia video</span>
-                        </div>
-                    @endif
-                    --}}
+
                 </div>
 
             </div>
