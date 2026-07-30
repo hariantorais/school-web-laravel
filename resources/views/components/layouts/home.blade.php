@@ -22,7 +22,7 @@
         $defaultFavicon = get_settings('school_favicon') ?? asset('images/favicon.png');
 
         // 🔥 Ambil nomor WhatsApp dari settings
-        $whatsappNumber = get_settings('whatsapp_number') ?? '6281234567890';
+        $whatsappNumber = get_settings('whatsapp_number');
         $whatsappMessage =
             get_settings('whatsapp_message') ?? 'Assalamu\'alaikum, saya ingin bertanya tentang pondok pesantren.';
     @endphp
