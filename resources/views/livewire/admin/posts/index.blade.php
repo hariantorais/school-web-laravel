@@ -118,6 +118,17 @@ new class extends Component {
                         </span>
                     </div>
 
+                    {{-- 🔥 BADGE YOUTUBE - Tampil jika ada youtube_url --}}
+                    @if ($post->youtube_url)
+                        <div class="absolute bottom-3 left-3">
+                            <span
+                                class="inline-flex items-center gap-1.5 bg-red-600/90 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-white/20 shadow-lg">
+                                <x-heroicon-s-play class="w-3.5 h-3.5" />
+                                <span>Tonton Video</span>
+                            </span>
+                        </div>
+                    @endif
+
                     {{-- Status Badge Melayang --}}
                     <div class="absolute top-3 right-3">
                         @if ($post->status === 'published')
@@ -133,6 +144,29 @@ new class extends Component {
                             </span>
                         @endif
                     </div>
+
+                    {{-- 🔥 BADGE YOUTUBE ALTERNATIF - Di pojok kanan bawah (opsional) --}}
+                    {{-- 
+                    @if ($post->youtube_url)
+                        <div class="absolute bottom-3 right-3">
+                            <span class="inline-flex items-center gap-1 bg-red-600/90 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-white/20 shadow-lg">
+                                <x-heroicon-s-play class="w-3 h-3" />
+                                Video
+                            </span>
+                        </div>
+                    @endif
+                    --}}
+
+                    {{-- 🔥 BADGE YOUTUBE - Overlay di tengah (opsional) --}}
+                    {{-- 
+                    @if ($post->youtube_url)
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="w-14 h-14 rounded-full bg-red-600/90 flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform duration-300">
+                                <x-heroicon-s-play class="w-7 h-7 text-white ml-1" />
+                            </div>
+                        </div>
+                    @endif
+                    --}}
                 </div>
 
                 {{-- 2. BADAN INFORMASI KARTU (CARD BODY) --}}
@@ -179,6 +213,16 @@ new class extends Component {
                                 href="{{ route('admin.posts.edit', $post->slug) }}" />
                         </div>
                     </div>
+
+                    {{-- 🔥 INDIKATOR VIDEO DI BAWAH JUDUL (ALTERNATIF) --}}
+                    {{-- 
+                    @if ($post->youtube_url)
+                        <div class="flex items-center gap-1.5 text-[10px] text-red-600 font-semibold bg-red-50/80 px-2.5 py-1 rounded-lg border border-red-200/50 -mt-1">
+                            <x-heroicon-s-play class="w-3 h-3" />
+                            <span>Tersedia video</span>
+                        </div>
+                    @endif
+                    --}}
                 </div>
 
             </div>

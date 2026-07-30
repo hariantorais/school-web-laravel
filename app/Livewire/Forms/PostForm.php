@@ -14,8 +14,11 @@ class PostForm extends Form
     public string $status = 'draft';
     public $image = null;
 
-    // 🔥 NEW PROPERTY: Daftarkan properti penampung tanggal
+    // 🔥 PROPERTY UNTUK TANGGAL
     public ?string $published_at = null;
+
+    // 🔥 PROPERTY UNTUK YOUTUBE URL (OPSIONAL)
+    public ?string $youtube_url = null;
 
     public function rules(): array
     {
@@ -25,6 +28,9 @@ class PostForm extends Form
             'content'     => ['required', 'string', 'min:20'],
             'status'      => ['required', 'in:draft,published'],
             'image'       => ['nullable', 'image', 'max:2048', 'mimes:jpeg,jpg,png,webp'],
+
+            // 🔥 VALIDASI UNTUK YOUTUBE URL (OPSIONAL)
+            'youtube_url' => ['nullable', 'url', 'regex:/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/'],
         ];
     }
 
@@ -41,6 +47,10 @@ class PostForm extends Form
 
         // 🔥 AMBIL DATA DARI DB: Pertahankan data penanggalan yang sudah ada sebelumnya
         $this->published_at = $post->published_at ? $post->published_at->toDateTimeString() : null;
+
+        // 🔥 AMBIL YOUTUBE URL DARI DB
+        $this->youtube_url = $post->youtube_url ?? null;
+
         $this->image = null;
     }
 
@@ -67,6 +77,9 @@ class PostForm extends Form
             'content'      => $this->content,
             'status'       => $this->status,
             'published_at' => $publishedAtValue, // 🔥 MASUKKAN KE PAYLOAD UNTUK SERVICE
+
+            // 🔥 TAMBAHKAN YOUTUBE_URL KE PAYLOAD
+            'youtube_url'  => $this->youtube_url ?? null, // Null jika kosong
         ];
 
         // Eksekusi percabangan berdasarkan keberadaan ID

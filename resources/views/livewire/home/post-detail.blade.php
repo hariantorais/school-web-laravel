@@ -37,10 +37,61 @@ new class extends Component {
             'categories' => Category::all(),
         ];
     }
+
+    /**
+     * 🔥 Helper untuk mendapatkan ID YouTube dari URL
+     */
+    public function getYoutubeIdProperty(): ?string
+    {
+        if (!$this->post->youtube_url) {
+            return null;
+        }
+
+        $url = $this->post->youtube_url;
+
+        // Extract video ID dari berbagai format URL YouTube
+        if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $url, $matches)) {
+            return $matches[1];
+        }
+
+        // Coba parse dari URL
+        parse_str(parse_url($url, PHP_URL_QUERY) ?? '', $params);
+        return $params['v'] ?? null;
+    }
+
+    /**
+     * 🔥 Helper untuk mendapatkan embed URL dengan parameter pembatasan
+     * Memastikan TIDAK ADA rekomendasi video lainnya
+     */
+    public function getYoutubeEmbedUrlProperty(): ?string
+    {
+        $videoId = $this->youtube_id;
+        if (!$videoId) {
+            return null;
+        }
+
+        // Parameter lengkap untuk memblokir semua rekomendasi
+        return "https://www.youtube.com/embed/{$videoId}?" .
+            http_build_query([
+                'autoplay' => 0,
+                'rel' => 0, // 🔥 MATIKAN REKOMENDASI VIDEO TERKAIT
+                'modestbranding' => 1,
+                'showinfo' => 0,
+                'controls' => 1,
+                'disablekb' => 1, // 🔥 NONAKTIFKAN KEYBOARD SHORTCUT
+                'fs' => 0, // 🔥 NONAKTIFKAN FULLSCREEN
+                'iv_load_policy' => 3, // 🔥 MATIKAN ANOTASI VIDEO
+                'cc_load_policy' => 0,
+                'hl' => 'id',
+                'playsinline' => 1,
+                'loop' => 1, // 🔥 LOOP VIDEO
+                'playlist' => $videoId, // 🔥 HANYA VIDEO INI YANG DIPUTAR
+                'widget_referrer' => url()->current(),
+            ]);
+    }
 }; ?>
 
 <div>
-
 
     @php
         $post = $this->post;
@@ -54,6 +105,11 @@ new class extends Component {
         $postUrl = url()->current();
         $postAuthor = $post->user->name ?? 'Admin';
         $postDate = $post->published_at ?? $post->created_at;
+
+        // 🔥 Cek apakah ada video YouTube
+        $hasVideo = !empty($post->youtube_url);
+        $youtubeEmbedUrl = $this->youtube_embed_url;
+        $youtubeId = $this->youtube_id;
     @endphp
 
     @section('title', $postTitle)
@@ -82,6 +138,7 @@ new class extends Component {
         @endif
     @endsection
 
+    {{-- HEADER HERO --}}
     <section class="relative pt-32 pb-16 lg:pt-40 lg:pb-24 overflow-hidden">
         <div class="absolute inset-0 z-0">
             <div class="absolute inset-0 bg-gradient-to-br from-[#1E293B] via-[#2D3A4F] to-[#1E293B]"></div>
@@ -94,7 +151,6 @@ new class extends Component {
 
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-3xl mx-auto text-center" data-aos="fade-up">
-
                 <div
                     class="inline-flex items-center gap-2 bg-[#A31D1D]/90 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                     <span class="w-2 h-2 bg-[#D4AF37] rounded-full animate-pulse"></span>
@@ -114,7 +170,7 @@ new class extends Component {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <span>{{ $post->published_at ? $post->published_at->isoFormat('D MMMM Y') : $post->create_at->isoFormat('D MMMM Y') }}</span>
+                        <span>{{ $post->published_at ? $post->published_at->isoFormat('D MMMM Y') : $post->created_at->isoFormat('D MMMM Y') }}</span>
                     </div>
                     <div class="w-1 h-1 bg-slate-500 rounded-full"></div>
                     <div class="flex items-center gap-2">
@@ -134,11 +190,23 @@ new class extends Component {
                         </svg>
                         <span>{{ number_format($post->views, 0, ',', '.') }} views</span>
                     </div>
+                    {{-- 🔥 INDIKATOR VIDEO DI HEADER --}}
+                    @if ($hasVideo)
+                        <div class="w-1 h-1 bg-slate-500 rounded-full"></div>
+                        <div class="flex items-center gap-1.5 text-[#D4AF37]">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                            </svg>
+                            <span class="text-xs font-medium">Video</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </section>
 
+    {{-- KONTEN UTAMA --}}
     <section class="py-16 lg:py-24 relative bg-[#FDFBF7]">
         <div class="absolute inset-0 z-0">
             <div
@@ -149,20 +217,62 @@ new class extends Component {
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
+                {{-- KOLOM KIRI: KONTEN UTAMA --}}
                 <div class="lg:col-span-2" data-aos="fade-right">
-                    <div class="relative rounded-2xl overflow-hidden shadow-xl mb-8">
-                        <img src="{{ $post->image_url }}" alt="{{ $post->title }}"
-                            class="w-full h-auto object-cover max-h-[500px]">
-                        <div
-                            class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/50 to-transparent">
-                        </div>
-                    </div>
 
+                    {{-- 🔥 MEDIA AREA: TAMPILKAN VIDEO ATAU GAMBAR --}}
+                    @if ($hasVideo && $youtubeEmbedUrl)
+                        {{-- VIDEO YOUTUBE DENGAN BLOKIR TOTAL --}}
+                        <div
+                            class="rounded-2xl overflow-hidden shadow-xl mb-8 border-2 border-[#A31D1D]/20 video-wrapper relative">
+                            <div class="relative aspect-video bg-black">
+                                <iframe class="absolute inset-0 w-full h-full" src="{{ $youtubeEmbedUrl }}"
+                                    title="{{ $post->title }} - Video Resmi" frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
+                                    id="youtube-player">
+                                </iframe>
+
+                                {{-- 🔥 OVERLAY BLOKIR - MENUTUPI SELURUH AREA BAWAH --}}
+                                <div class="absolute bottom-0 left-0 right-0" style="height: 40%; z-index: 30;">
+                                    <!-- Elemen block yang benar-benar menutupi -->
+                                    <div class="w-full h-full" style="background: transparent; pointer-events: none;">
+                                    </div>
+                                </div>
+
+                                {{-- 🔥 OVERLAY KEDUA DENGAN POINTER-EVENTS: AUTO UNTUK BLOKIR KLIK --}}
+                                <div class="absolute bottom-0 left-0 right-0"
+                                    style="height: 35%; z-index: 31; pointer-events: auto; cursor: default;">
+                                    <div class="w-full h-full flex items-end justify-center pb-4">
+
+                                    </div>
+                                </div>
+
+                                {{-- 🔥 OVERLAY KETIGA - PALING ATAS UNTUK BLOKIR --}}
+                                <div class="absolute bottom-0 left-0 right-0"
+                                    style="height: 30%; z-index: 32; pointer-events: auto; cursor: default;">
+                                    <div class="w-full h-full bg-transparent"></div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        {{-- TAMPILKAN GAMBAR SAMPUL (jika tidak ada video) --}}
+                        <div class="relative rounded-2xl overflow-hidden shadow-xl mb-8">
+                            <img src="{{ $post->image_url }}" alt="{{ $post->title }}"
+                                class="w-full h-auto object-cover max-h-[500px]">
+                            <div
+                                class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/50 to-transparent">
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- KONTEN ARTIKEL --}}
                     <div
                         class="prose prose-slate max-w-none prose-headings:font-heading prose-headings:text-[#1E293B] prose-p:text-slate-600 prose-p:leading-relaxed prose-strong:text-[#A31D1D] focus:outline-none">
                         {!! $post->content !!}
                     </div>
 
+                    {{-- BAGIKAN --}}
                     <div class="mt-10 pt-6 border-t border-slate-200">
                         <div class="flex flex-wrap items-center justify-between gap-4">
                             <div class="flex items-center gap-3">
@@ -198,8 +308,10 @@ new class extends Component {
                     </div>
                 </div>
 
+                {{-- KOLOM KANAN: SIDEBAR --}}
                 <div class="lg:col-span-1 space-y-8" data-aos="fade-left">
 
+                    {{-- SEARCH --}}
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
                         <h3 class="font-heading font-bold text-[#1E293B] mb-4">Cari Artikel</h3>
                         <form action="/posts" method="GET" class="relative">
@@ -215,6 +327,7 @@ new class extends Component {
                         </form>
                     </div>
 
+                    {{-- ARTIKEL TERBARU --}}
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
                         <h3 class="font-heading font-bold text-[#1E293B] mb-4">Artikel Terbaru</h3>
                         <div class="space-y-4">
@@ -222,9 +335,18 @@ new class extends Component {
                                 <a href="/posts/{{ $recent->slug }}" wire:navigate
                                     class="flex gap-3 group items-center">
                                     <div
-                                        class="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-100 shadow-sm">
+                                        class="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-100 shadow-sm relative">
                                         <img src="{{ $recent->image_url }}" alt="{{ $recent->title }}"
                                             class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                                        @if (!empty($recent->youtube_url))
+                                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                                <svg class="w-6 h-6 text-white/80" fill="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                                                </svg>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="min-w-0">
                                         <p class="text-[10px] text-slate-400">
@@ -241,6 +363,7 @@ new class extends Component {
                         </div>
                     </div>
 
+                    {{-- KATEGORI --}}
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
                         <h3 class="font-heading font-bold text-[#1E293B] mb-4">Kategori</h3>
                         <div class="flex flex-wrap gap-2">
@@ -253,6 +376,7 @@ new class extends Component {
                         </div>
                     </div>
 
+                    {{-- QUOTE --}}
                     <div
                         class="bg-gradient-to-br from-[#1E293B] to-[#2D3A4F] rounded-2xl p-5 text-white border border-white/10">
                         <svg class="w-8 h-8 text-[#D4AF37]/50 mb-3" fill="currentColor" viewBox="0 0 24 24">
@@ -270,3 +394,153 @@ new class extends Component {
     </section>
 
 </div>
+
+{{-- 🔥 CSS UNTUK MEMBLOKIR TOTAL SEMUA INTERAKSI --}}
+<style>
+    /* Video wrapper */
+    .video-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Iframe video */
+    .video-wrapper iframe {
+        pointer-events: auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 🔥 BLOKIR OVERLAY DENGAN POINTER-EVENTS: AUTO */
+    .video-wrapper .blocker-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 35%;
+        z-index: 50;
+        pointer-events: auto;
+        cursor: default;
+        background: transparent;
+    }
+
+    /* 🔥 OVERLAY KEDUA LEBIH TINGGI */
+    .video-wrapper .blocker-overlay-2 {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40%;
+        z-index: 51;
+        pointer-events: auto;
+        cursor: default;
+        background: transparent;
+    }
+
+    /* 🔥 OVERLAY KETIGA - PALING ATAS */
+    .video-wrapper .blocker-overlay-3 {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 30%;
+        z-index: 52;
+        pointer-events: auto;
+        cursor: default;
+        background: transparent;
+    }
+
+    /* Untuk mobile */
+    @media (max-width: 640px) {
+        .video-wrapper .blocker-overlay {
+            height: 40%;
+        }
+
+        .video-wrapper .blocker-overlay-2 {
+            height: 45%;
+        }
+
+        .video-wrapper .blocker-overlay-3 {
+            height: 35%;
+        }
+    }
+</style>
+
+{{-- 🔥 JAVASCRIPT UNTUK BLOKIR INTERAKSI --}}
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 🔥 1. Mencegah klik kanan pada iframe
+            document.querySelectorAll('.video-wrapper iframe').forEach(function(iframe) {
+                iframe.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+            });
+
+            // 🔥 2. Mencegah keyboard shortcut YouTube
+            document.addEventListener('keydown', function(e) {
+                const iframe = document.querySelector('.video-wrapper iframe');
+                if (iframe && document.activeElement === iframe) {
+                    const blockedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Space',
+                        'f', 'F'
+                    ];
+                    if (blockedKeys.includes(e.key) || e.key === ' ') {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+            });
+
+            // 🔥 3. Mencegah semua event pada area bawah
+            const videoWrapper = document.querySelector('.video-wrapper');
+            if (videoWrapper) {
+                // Blokir semua event mouse di area bawah
+                videoWrapper.addEventListener('click', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const clickY = e.clientY - rect.top;
+                    const height = rect.height;
+
+                    // Jika klik di 35% bawah video
+                    if (clickY > height * 0.65) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                }, true);
+
+                // Blokir mouse events lainnya
+                ['mousedown', 'mouseup', 'mousemove', 'mouseover', 'mouseout'].forEach(function(eventType) {
+                    videoWrapper.addEventListener(eventType, function(e) {
+                        const rect = this.getBoundingClientRect();
+                        const mouseY = e.clientY - rect.top;
+                        const height = rect.height;
+
+                        if (mouseY > height * 0.65) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        }
+                    }, true);
+                });
+            }
+
+            // 🔥 4. Blokir touch events untuk mobile
+            document.querySelectorAll('.video-wrapper').forEach(function(wrapper) {
+                wrapper.addEventListener('touchstart', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    const touchY = touch.clientY - rect.top;
+                    const height = rect.height;
+
+                    if (touchY > height * 0.65) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                }, {
+                    passive: false
+                });
+            });
+        });
+    </script>
+@endpush
